@@ -1,0 +1,125 @@
+.project-detail-tabs {
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    /* max-width: 600px; */
+    /* margin: 0 auto; */
+}
+.etapas-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.etapas-filter-row {
+    width: 100%;
+}
+.etapas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.etapa-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    transition: box-shadow 0.2s;
+}
+.etapa-row:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.etapa-nombre {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+}
+.etapa-unidades {
+    flex: 0 0 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.etapa-unidades-badge {
+    background: #e0e7ef;
+    color: #333;
+    border-radius: 12px;
+    padding: 0.3rem 0.9rem;
+    font-weight: 600;
+    font-size: 1rem;
+}
+.etapa-actions {
+    flex: 0 0 40px;
+    display: flex;
+    justify-content: flex-end;
+}
+.etapas-add-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+@media (max-width: 600px) {
+    .project-detail-tabs {
+        padding: 0.5rem;
+        max-width: 100vw;
+    }
+    .etapa-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+        padding: 0.75rem 0.5rem;
+    }
+    .etapa-unidades, .etapa-actions {
+        justify-content: flex-start;
+    }
+}
+
+/* ====== Tab de Locales (subtabla) ====== */
+.compactTable .p-datatable-thead > tr > th,
+.compactTable .p-datatable-tbody > tr > td {
+  padding: .5rem .75rem;        /* más aire, menos “pegado” */
+  vertical-align: middle;
+}
+
+.cell-codigo,
+.cell-nombre,
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: .5rem;                    /* separación entre controles */
+}
+
+.ms-one .p-multiselect { width: 100%; }
+.ms-one .p-multiselect-label {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;       /* evita que desborde */
+  white-space: nowrap;
+}
+
+/* chips de MultiSelect más compactos */
+.ms-one .p-multiselect-token {
+  margin: 0 .25rem .25rem 0;
+  padding: .1rem .35rem;
+  font-size: .75rem;
+}
+
+/* Botonera de acciones compacta y con separación */
+.actions-cell { justify-content: flex-end; gap: .5rem; }
+
+/* Overlay: asegura que no se haga enorme en pantallas chicas */
+.p-overlaypanel .p-overlaypanel-content { max-width: min(92vw, 560px); }
+
+/* ====== Tabla general de BLOQUES con scroll ====== */
+/* Cuando usemos .dataTableFullHeight en el wrapper (ver abajo) */
+.dataTableFullHeight .p-datatable-wrapper {
+  height: 100%;
+  overflow: auto;                /* scroll vertical + horizontal si hace falta */
+}
+
+/* Evita que las columnas se peguen si el ancho es justo */
+.tableMinWidth { min-width: 720px; }  /* ajusta a gusto */

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Informe de Atención de Tickets</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; color: #000; background: #fff; }
+    .sheet { width: 920px; margin: 16px auto; border: 2px solid #000; border-collapse: collapse; }
+    .sheet td, .sheet th { border: 1px solid #000; padding: 6px 8px; vertical-align: middle; font-size: 12px; line-height: 1.25; }
+    .header-blank { background: #ffffff; min-width: 140px; }
+    .green-header { background: #4CAF50; font-weight: bold; text-align: center; color: #fff; }
+    .green-subheader { background: #A5D6A7; font-weight: bold; text-align: center; }
+    .center { text-align: center; }
+    .right { text-align: right; }
+    .left { text-align: left; }
+    .bold { font-weight: bold; }
+    .small { font-size: 11px; }
+    .xsmall { font-size: 10px; }
+    .evidencias { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .evidencias img { width: 150px; height: 100px; object-fit: cover; border: 1px solid #ccc; }
+  </style>
+</head>
+
+<body>
+
+  <table class="sheet">
+    <!-- Encabezado -->
+    <tr>
+      <td class="header-blank" style="margin:0%; padding:0%;" rowspan="2" colspan="2">
+        <div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;">
+          {{#if logo}}<img src="{{logo}}" style="max-width:100%;" alt="logo">{{else}}<span>MotorHours</span>{{/if}}
+        </div>
+      </td>
+      <td class="green-header" colspan="8" style="font-size:16px;">
+        INFORME DE ATENCIÓN DE INCIDENTE – TICKETS
+      </td>
+    </tr>
+    <tr>
+      <td class="green-header center" colspan="4">Versión: 001</td>
+      <td class="green-header center" colspan="4">Fecha de registro: {{fechaRegistro}}</td>
+    </tr>
+
+    <!-- Datos principales -->
+    <tr>
+      <td class="green-subheader" colspan="2">ID Ticket</td>
+      <td colspan="2">{{idTicket}}</td>
+      <td class="green-subheader" colspan="2">Solicitante</td>
+      <td colspan="4">{{solicitante}}</td>
+    </tr>
+    <tr>
+      <td class="green-subheader" colspan="2">Área</td>
+      <td colspan="2">{{area}}</td>
+      <td class="green-subheader" colspan="2">Prioridad</td>
+      <td colspan="4">{{prioridad}}</td>
+    </tr>
+    <tr>
+      <td class="green-subheader" colspan="2">Local</td>
+      <td colspan="2">{{local}}</td>
+      <td class="green-subheader" colspan="2">Bloque</td>
+      <td colspan="4">{{bloque}}</td>
+    </tr>
+    <tr>
+      <td class="green-subheader" colspan="2">Propietario</td>
+      <td colspan="8">{{propietario}}</td>
+    </tr>
+
+    <!-- Descripción y solución -->
+    <tr>
+      <td class="green-header" colspan="10">Descripción del Incidente</td>
+    </tr>
+    <tr>
+      <td colspan="10">{{descripcion}}</td>
+    </tr>
+    <tr>
+      <td class="green-header" colspan="10">Acción y Solución</td>
+    </tr>
+    <tr>
+      <td colspan="10">{{solucion}}</td>
+    </tr>
+    <tr>
+      <td class="green-header" colspan="10">Responsable</td>
+    </tr>
+    <tr>
+      <td colspan="10">{{responsable}}</td>
+    </tr>
+
+    <!-- Evidencias -->
+    {{!-- <tr>
+  <td class="green-header" colspan="10">Evidencias</td>
+</tr>
+<tr>
+  <td colspan="10">
+    <div class="evidencias">
+      {{#each evidencias}}
+        <img src="{{this}}" alt="evidencia" />
+      {{/each}}
+    </div>
+  </td>
+</tr> --}}
+
+    <!-- Evidencias -->
+    <!-- Evidencias Iniciales -->
+    <tr>
+      <td class="green-header" colspan="10">Evidencias Iniciales</td>
+    </tr>
+    <tr>
+      <td colspan="10">
+        {{#if evidenciasIniciales.length}}
+          <div class="evidencias">
+            {{#each evidenciasIniciales}}
+              {{#if this.isImage}}
+                <div>
+                  <img src="{{this.url}}" alt="{{this.nombre}}" />
+                  <div class="xsmall center">{{this.nombre}}</div>
+                </div>
+              {{else}}
+                <div class="xsmall center">
+                  <a href="{{this.url}}" target="_blank">
+                    <img src="{{this.icon}}" style="width:150px; height:100px; object-fit:contain;" />
+                    <div>{{this.nombre}}</div>
+                  </a>
+                </div>
+              {{/if}}
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="center xsmall">
+            No se adjuntaron evidencias iniciales.
+          </div>
+        {{/if}}
+      </td>
+    </tr>
+
+    <!-- Evidencias Proceso -->
+    <tr>
+      <td class="green-header" colspan="10">Evidencias Proceso</td>
+    </tr>
+    <tr>
+      <td colspan="10">
+        {{#if evidenciasProceso.length}}
+          <div class="evidencias">
+            {{#each evidenciasProceso}}
+              {{#if this.isImage}}
+                <div>
+                  <img src="{{this.url}}" alt="{{this.nombre}}" />
+                  <div class="xsmall center">{{this.nombre}}</div>
+                </div>
+              {{else}}
+                <div class="xsmall center">
+                   <a href="{{this.url}}" target="_blank">
+                      <img src="{{this.icon}}" style="width:150px; height:100px; object-fit:contain;" />
+                      <div>{{this.nombre}}</div>
+                    </a>
+                </div>
+              {{/if}}
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="center xsmall">
+            No se adjuntaron evidencias finales.
+          </div>
+        {{/if}}
+      </td>
+    </tr>
+
+    <!-- Evidencias Finales -->
+    <tr>
+      <td class="green-header" colspan="10">Evidencias Finales</td>
+    </tr>
+    <tr>
+      <td colspan="10">
+        {{#if evidenciasFinales.length}}
+          <div class="evidencias">
+            {{#each evidenciasFinales}}
+              {{#if this.isImage}}
+                <div>
+                  <img src="{{this.url}}" alt="{{this.nombre}}" />
+                  <div class="xsmall center">{{this.nombre}}</div>
+                </div>
+              {{else}}
+                <div class="xsmall center">
+                   <a href="{{this.url}}" target="_blank">
+                    <img src="{{this.icon}}" style="width:150px; height:100px; object-fit:contain;" />
+                    <div>{{this.nombre}}</div>
+                  </a>
+                </div>
+              {{/if}}
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="center xsmall">
+            No se adjuntaron evidencias finales.
+          </div>
+        {{/if}}
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

@@ -1,0 +1,1452 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
+body {
+    font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
+}
+
+#root {
+    height: 100%;
+}
+
+/* Estilo para la barra de desplazamieto */
+::-webkit-scrollbar {
+    width: 10px;
+    /* Ancho de la barra de desplazamiento */
+    height: 10px;
+    /* Ancho de la barra de desplazamiento */
+    background-color: #f1f1f1;
+    /* Color de fondo de la barra */
+}
+
+/* Estilo para el "track" de la barra de desplazamiento */
+::-webkit-scrollbar-track {
+    background: #e1e4e8;
+    /* Color de la pista de la barra */
+    border-radius: 10px;
+    /* Bordes redondeados */
+}
+
+/* Estilo para el "thumb" (control deslizante) de la barra de desplazamiento */
+::-webkit-scrollbar-thumb {
+    background-color: #4CAF50;
+    /* Color del control deslizante */
+    border-radius: 10px;
+    /* Bordes redondeados del control deslizante */
+    border: 2px solid #e1e4e8;
+    /* Borde alrededor del control deslizante */
+}
+
+/* Estilo al pasar el cursor sobre el "thumb" */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #4CAF50;
+    /* Color al pasar el mouse */
+}
+
+.swal2-container {
+    z-index: 2003 !important;
+}
+
+.brand-link .brand-image-mini {
+    display: none !important;
+    max-height: 30px !important;
+    height: 30px !important;
+    margin-left: auto !important;
+    /* .8rem;*/
+    margin-right: auto !important;
+    /*.5rem;*/
+}
+
+.brand-link .brand-image {
+    float: left !important;
+    line-height: 0.8 !important;
+    margin-left: auto !important;
+    /* .8rem;*/
+    margin-right: auto !important;
+    /*.5rem;*/
+    margin-top: -3px !important;
+    max-height: 60px !important;
+    width: auto !important;
+}
+
+.sidebar-mini.sidebar-collapse .main-sidebar .brand-link .brand-image {
+    display: none !important;
+}
+
+.sidebar-mini.sidebar-collapse .main-sidebar .brand-link .brand-image-mini {
+    display: block !important;
+}
+
+.navbar-primary {
+    background-color: #114b8a !important;
+    color: #ffffff;
+}
+
+.hide {
+    display: none;
+}
+
+.editor {
+    background-color: #fff;
+    min-height: 150px;
+}
+
+.spanview {
+    display: none;
+}
+
+.nav {
+    height: 5%;
+}
+
+@media (max-width: 767.98px) {
+    .small-box .icon {
+        display: block !important;
+    }
+}
+
+.navbar-danger {
+    background-color: #f6303e !important;
+    color: #fff;
+}
+
+.layout-navbar-fixed.layout-fixed .wrapper .sidebar {
+    margin-top: calc(3.1rem + 1px);
+}
+
+.navbar-success {
+    background-color: #287441 !important;
+}
+
+.certain-category-search-dropdown .ant-select-dropdown-menu-item-group-title {
+    color: #666;
+    font-weight: bold;
+}
+
+.certain-category-search-dropdown .ant-select-dropdown-menu-item-group {
+    border-bottom: 1px solid #f6f6f6;
+}
+
+.certain-category-search-dropdown .ant-select-dropdown-menu-item {
+    padding-left: 16px;
+}
+
+.certain-category-search-dropdown .ant-select-dropdown-menu-item.show-all {
+    text-align: center;
+    cursor: default;
+}
+
+.certain-category-search-dropdown .ant-select-dropdown-menu {
+    max-height: 300px;
+}
+
+.field {
+    margin-bottom: 0rem !important;
+}
+
+.layout-main-container {
+    padding: 6rem 2rem 2rem 5rem !important;
+}
+
+@media (min-width: 992px) {
+    .layout-wrapper.layout-static .layout-main-container {
+        margin-left: 210px !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .layout-wrapper.layout-static.layout-static-sidebar-inactive .layout-main-container {
+        margin-left: 90px !important;
+        padding: 6rem 0rem 2rem 0rem !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .layout-wrapper.layout-static.layout-static-sidebar-inactive .layout-sidebar {
+        transform: translateX(-100%);
+        left: 0;
+    }
+}
+
+/* .p-inputtext {
+    padding: 0.429rem 0.571rem !important;
+} */
+
+.p-inputtext.p-inputtext-sm {
+    font-size: 0.875rem;
+    padding: 0.65625rem 0.65625rem;
+}
+
+.p-inputtext.p-inputtext-lg {
+    font-size: 1.25rem;
+    padding: 0.9375rem 0.9375rem;
+}
+
+.p-inputtext.ant-select {
+    padding: 0px !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.p-dropdown-panel,
+.p-password-panel {
+    z-index: 2061 !important;
+}
+
+@media all and (min-width: 480px) {
+    .Login {
+        height: 100%;
+        padding: 60px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .Login form {
+        margin: 0 auto;
+        max-width: 320px;
+    }
+}
+
+.bg-pink {
+    background-color: pink;
+}
+
+/* .p-overlaypanel,
+.p-colorpicker-overlay-panel,
+.p-datepicker {
+    z-index: 2004;
+} */
+
+.overlaypanel-day .select-product-button {
+    min-width: 15rem;
+}
+
+.overlaypanel-day .product-image {
+    width: 50px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.p-inputgroup-addon {
+    padding: 5px !important;
+}
+
+.multiselect-demo .p-multiselect {
+    min-width: 15rem;
+}
+
+.multiselect-demo
+    .multiselect-custom
+    .p-multiselect-label:not(.p-placeholder):not(.p-multiselect-items-label) {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.multiselect-demo .multiselect-custom .country-item-value {
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    display: inline-flex;
+    margin-right: 0.5rem;
+    background-color: var(--primary-color);
+    color: var(--primary-color-text);
+}
+
+.multiselect-demo .multiselect-custom .country-item-value img.flag {
+    width: 17px;
+}
+
+.status-success {
+    background: #c8e6c9;
+    color: #256029;
+}
+
+.status-danger {
+    background: #ffcdd2;
+    color: #c63737;
+}
+
+.status-warning {
+    background: #feedaf;
+    color: #8a5340;
+}
+
+.status-info {
+    background: var(--primary-color);
+    color: #ffffff;
+}
+
+.status-secundary {
+    background: #9e9e9e;
+    color: #ffffff;
+}
+
+.p-dialog .p-dialog-header {
+    color: #fff;
+    background-color: var(--primary-color) !important;
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+    padding: 1rem !important;
+}
+
+.p-dialog .p-dialog-footer {
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+}
+
+.p-dialog .p-dialog-content {
+    padding: 1rem !important;
+}
+/* 
+.p-dialog-visible {
+    z-index: 3000 !important;
+} */
+
+.p-connected-overlay-enter-done {
+    z-index: 4001 !important;
+}
+
+.p-multiselect-panel.p-connected-overlay-enter-done,
+.p-dropdown-panel.p-component.p-connected-overlay-enter-done,
+.p-datepicker.p-component.p-connected-overlay-enter-done,
+.p-overlaypanel.p-component.p-overlaypanel-enter-done,
+.p-tooltip.p-component.p-tooltip-top.p-tooltip-active {
+    z-index: 4001 !important;
+}
+
+.p-toast.p-toast.p-component {
+    z-index: 4002 !important;
+}
+
+@media (max-width: 991px) {
+    .layout-wrapper .layout-main-container {
+        padding: 5rem 0rem 2rem 0rem !important;
+    }
+}
+
+.row-dragging {
+    background: #fafafa;
+    border: 1px solid #ccc;
+}
+
+.row-dragging td {
+    padding: 16px;
+}
+
+.row-dragging .drag-visible {
+    visibility: visible;
+}
+
+.cut_word {
+    max-height: 20px !important;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.p-dialog .p-dialog-header .p-dialog-header-icon {
+    color: #ffffff !important;
+}
+
+.p-card-header {
+    padding: 1rem;
+}
+
+.layout-topbar {
+    background-color: #f5faff;
+}
+
+.layout-topbar .layout-topbar-logo img {
+    height: 3.5rem;
+}
+
+.login-component {
+    font-size: 1.2rem;
+}
+
+.p-dialog .p-dialog-header .p-dialog-title {
+    text-align: center;
+}
+
+.p-button.p-button-xs.p-button-icon-only.p-button-rounded {
+    height: 2rem;
+}
+
+.p-button.p-button-xs.p-button-icon-only {
+    width: 2rem;
+}
+
+.grid {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.apexcharts-toolbar {
+    display: none !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-bottom: 0;
+}
+
+.p-badge-dot {
+    min-height: 1.5rem;
+    min-width: 1.5rem;
+}
+
+/* .p-datatable-scrollable .p-datatable-tbody > tr > td {
+    display: inline !important;
+} */
+
+/* ,p-datatable-scrollable .p-datatable-tfoot > tr > td {
+    display: inline !important;
+} */
+
+/* LOADER */
+
+.p-item-selected {
+    border-bottom: 3px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.dots::after {
+    content: "";
+    display: inline-block;
+    width: 1em;
+    text-align: left;
+    animation: ellipsis 1.5s infinite;
+}
+
+@keyframes ellipsis {
+    0% {
+        content: "";
+    }
+
+    33% {
+        content: ".";
+    }
+
+    66% {
+        content: "..";
+    }
+
+    100% {
+        content: "...";
+    }
+}
+
+.no-header .p-dialog-header {
+    display: none;
+}
+
+.no-header .p-dialog-content {
+    border-radius: 8px !important;
+}
+
+.error-boundary {
+    text-align: center;
+    padding: 20px;
+}
+
+.error-image {
+    max-width: 100%;
+    max-height: 500px;
+    height: auto;
+}
+
+.error-text {
+    margin-top: 20px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.upload-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid #c8c8c8;
+    color: #000;
+    transition: all 0.3s ease;
+    /* Añade la transición */
+}
+
+.upload-button:hover {
+    background: none;
+    border: 1px solid #4CAF50;
+    color: #fff;
+}
+
+.logo-movico {
+    width: 150px;
+    mix-blend-mode: multiply;
+    /* Mezcla colores oscuros */
+    background-color: transparent;
+    /* Elimina fondo */
+}
+
+.carousel-wrapper {
+    display: flex;
+    /* Usa flexbox para centrar contenido */
+    justify-content: center;
+    /* Centra horizontalmente */
+    align-items: center;
+    /* Centra verticalmente */
+    width: 300px;
+    /* Ajusta el ancho del contenedor */
+    height: 300px;
+    /* Asegura que se ocupe todo el espacio disponible */
+    overflow: hidden;
+    /* Evita que los elementos desborden */
+    position: relative;
+    /* Asegura que el contenido respete el contenedor */
+}
+
+.carousel-wrapper .carousel-image {
+    max-width: 100%;
+    /* Limita el ancho de la imagen */
+    max-height: 100%;
+    /* Limita la altura de la imagen */
+    object-fit: contain;
+    /* Asegura que la imagen no se deforme */
+    margin: auto;
+    /* Centra la imagen automáticamente */
+}
+
+.custom-dropdown {
+    max-width: 300px !important;
+    /* Define un ancho máximo */
+    width: 100% !important;
+    /* Ocupa todo el espacio disponible */
+    font-family: "Roboto", sans-serif !important;
+    font-size: 16px !important;
+    border: none !important;
+    /* Elimina todos los bordes */
+    border-bottom: 3px solid #ccc !important;
+    /* Aplica solo el borde inferior */
+    border-radius: 0 !important;
+    background-color: #f5faff !important;
+    transition: all 0.3s ease !important;
+}
+
+.custom-dropdown .p-dropdown-label {
+    color: #ff6412 !important;
+    /* Color naranja para el texto del label */
+    font-weight: 900 !important;
+    /* Asegura el estilo en negrita */
+}
+
+.custom-dropdown .p-dropdown-trigger {
+    border-radius: 0 !important;
+    color: #ff6412 !important;
+    transition: background-color 0.3s ease, transform 0.2s ease !important;
+}
+
+/* Media Query para dispositivos pequeños */
+@media (max-width: 768px) {
+    .custom-dropdown {
+        width: 100% !important;
+        /* Ocupa todo el ancho disponible */
+        max-width: none !important;
+        /* Elimina el límite de 300px */
+    }
+}
+
+/* Skeleton se desvanece */
+.skeleton-fade {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.skeleton-fade-hidden {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    pointer-events: none;
+    /* Evita interacciones mientras se desvanece */
+}
+
+/* Tabla se aparece */
+.table-fade {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.table-fade-visible {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.p-image-mask {
+    z-index: 9999 !important;
+}
+
+.row-no-stock {
+    background-color: #c8ffac !important;
+}
+
+.row-low-stock {
+    background-color: #9dd8ff !important;
+}
+
+.row-normal-stock {
+    background-color: #f8e6a0 !important;
+}
+
+.row-high-stock {
+    background-color: #ffa3a5 !important;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    /* Espacio entre el SelectButton y acciones */
+    align-items: center;
+    flex-wrap: wrap;
+    /* Permite ajuste en pantallas pequeñas */
+    gap: 8px;
+}
+
+/* Ajuste específico para pantallas grandes */
+.select-button {
+    flex-shrink: 0;
+    /* Evita que el SelectButton se reduzca */
+    margin-right: auto;
+    /* Lo lleva al extremo izquierdo */
+}
+
+/* Ajustes para dispositivos pequeños (menos de 768px) */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        /* Apila los elementos verticalmente */
+        align-items: flex-start;
+        /* Alinea todo a la izquierda */
+    }
+
+    .select-button,
+    .actions-toolbar {
+        width: 100%;
+        /* Ocupa el ancho completo */
+    }
+}
+
+/* Colores específicos para cada opción */
+.custom-select-button .p-button:nth-child(1) {
+    color: #6c757d;
+}
+
+.custom-select-button .p-button:nth-child(2) {
+    color: #28a745;
+}
+
+.custom-select-button .p-button:nth-child(3) {
+    color: #007bff;
+}
+
+.custom-select-button .p-button:nth-child(4) {
+    color: #ffc107;
+}
+
+.custom-select-button .p-button:nth-child(5) {
+    color: #dc3545;
+}
+
+/* Animación de desvanecimiento (fade out) */
+.fade-out {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* Animación de entrada (fade in) */
+.fade-in {
+    animation: fadeIn 0.5s ease-in forwards;
+    opacity: 0;
+    /* Inicia invisible */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Animación de movimiento (brillo) */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+
+.custom-day-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    /* Ajusta al ancho del día en el calendario */
+    height: 100%;
+    /* Ajusta al alto del día en el calendario */
+    text-align: center;
+    /* Asegura que el texto esté centrado */
+    line-height: 1.5rem;
+    /* Mantiene la alineación de los números */
+}
+
+.inventory-dot {
+    position: absolute;
+    top: 18px;
+    /* Coloca el punto encima del número */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    /* Tamaño del punto */
+    height: 6px;
+    background-color: rgb(255, 166, 0);
+    /* Color del punto */
+    border-radius: 50%;
+    /* Hace que sea redondo */
+    pointer-events: none;
+    /* Para que no interfiera con el clic */
+}
+
+.Toastify__toast-icon.Toastify--animate-icon.Toastify__zoom-enter {
+    color: #fff !important;
+    /* Color blanco para todos los íconos */
+}
+
+/* Contenedor de la tabla */
+.datatable-container {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.6s ease-in-out, opacity 0.6s ease-in-out;
+}
+
+/* Se activa cuando isLoaded es true */
+.datatable-container.show {
+    max-height: 100vh;
+    /* Se expande a toda la altura disponible */
+    opacity: 1;
+}
+
+.datatable-container.show .no-data-message {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+    color: #333;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:focus {
+    box-shadow: none !important;
+}
+
+.p-tabview-ink-bar {
+    display: none !important;
+}
+
+.p-menu {
+    padding: 0 !important;
+    z-index: 9999 !important;
+}
+
+/* .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {*/
+    /* display: flex !important; */
+    /* Usa flexbox para controlar la alineación */
+    /* align-items: center; */
+    /* Alinea el contenido verticalmente en el centro */
+    /* padding-top: 0; */
+    /* Elimina cualquier padding superior */
+    /* padding-bottom: 0; */
+    /* Elimina cualquier padding inferior */
+    /* padding-left: 0.5em; */
+    /* Mantiene un poco de espacio a los lados si es necesario */
+    /* padding-right: 0.5em;
+}  */
+
+/* Mantén su efecto donde las necesitas (si puedes, ponles un scope de página) */
+/* .pagina-x .p-datatable.p-datatable-sm ... { display:flex !important; } */
+
+/* Dentro del panel inline (o panel custom) vuelve a la semántica de tabla */
+.inline-inside-dialog .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td,
+.oc-panel .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+  display: table-cell !important;
+  align-items: initial;
+}
+
+.inline-inside-dialog .p-datatable-scrollable .p-datatable-tbody > tr > td,
+.oc-panel .p-datatable-scrollable .p-datatable-tbody > tr > td {
+  display: table-cell !important;
+}
+
+
+.notification-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.dot-notification {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    background-color: red;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+    z-index: 2;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.shake {
+    animation: shake-animation 0.6s;
+}
+
+@keyframes shake-animation {
+    0% {
+        transform: translate(0);
+    }
+
+    25% {
+        transform: translate(-2px, 0);
+    }
+
+    50% {
+        transform: translate(2px, 0);
+    }
+
+    75% {
+        transform: translate(-2px, 0);
+    }
+
+    100% {
+        transform: translate(0);
+    }
+}
+
+.user-profile-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.user-profile-banner {
+    height: 120px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.user-profile-avatar-wrapper {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.user-profile-avatar {
+    width: 120px;
+    height: 120px;
+    border: 4px solid #fff;
+    overflow: hidden;
+}
+
+.user-profile-avatar-actions {
+    background-color: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    border-radius: 9999px;
+}
+
+.user-profile-avatar:hover .user-profile-avatar-actions {
+    opacity: 1;
+}
+
+/* Contenedor general del calendario */
+.fc-wrapper {
+    position: relative;
+}
+
+.fc .fc-scroller-harness {
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+}
+
+/* Para evitar que se desborde */
+.fc .fc-timegrid {
+    /* min-width: 900px; */
+}
+
+/* Cabecera visible pero no con scroll propio */
+.fc .fc-col-header {
+    overflow: hidden;
+}
+
+/* Aplica solo cuando FullCalendar está en la vista timeGrid */
+.fc-timeGridWeek-view .fc-timegrid-slot {
+    height: 40px !important;
+}
+
+.fc-timeGridWeek-view .fc-event {
+    line-height: 40px;
+    /* para centrar texto */
+    height: 40px !important;
+    /* solo si es un evento de 30 min */
+    min-height: 40px !important;
+}
+
+/* Aplica un ancho mínimo a cada columna de hora */
+.fc .fc-timegrid-slot {
+    min-height: 40px;
+    /* Altura de cada fila, por si lo necesitas */
+}
+
+.fc .fc-timegrid-col {
+    min-width: 200px !important;
+    /* Fuerza ancho mínimo de cada columna */
+    width: 200px !important;
+    /* También puedes usar un ancho fijo */
+    max-width: 200px !important;
+}
+
+/* Asegura que las cabeceras de los días coincidan con las columnas */
+.fc .fc-col-header-cell {
+    min-width: 200px !important;
+    width: 200px !important;
+    max-width: 200px !important;
+    text-align: center;
+}
+
+/* Centrar el único botón si es el único visible en el buttonbar */
+.custom-month-picker-line > .p-datepicker .p-datepicker-buttonbar {
+    display: flex;
+    justify-content: center;
+}
+
+/* Si hay más de un botón visible, aplica distribución normal */
+.custom-month-picker-line
+    > .p-datepicker
+    .p-datepicker-buttonbar
+    .p-button:first-child
+    + .p-button {
+    /* si hay un segundo botón, usa space-between */
+    justify-content: space-between !important;
+}
+
+.custom-month-picker-line > .p-datepicker .p-datepicker-buttonbar .p-button:nth-child(2) {
+    display: none !important;
+}
+
+.custom-sidebar-day-detail-mask {
+    z-index: 999999 !important;
+}
+
+.p-sidebar.custom-sidebar-day-detail {
+    z-index: 999999 !important;
+}
+
+.fade-enter {
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.fade-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 300ms, transform 300ms;
+}
+
+.fade-exit {
+    opacity: 1;
+}
+
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 200ms;
+}
+
+.slide-right-enter {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.slide-right-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 300ms ease;
+}
+
+.slide-left-enter {
+    opacity: 0;
+    transform: translateX(-30px);
+}
+
+.slide-left-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 300ms ease;
+}
+
+.slide-right-exit,
+.slide-left-exit {
+    opacity: 1;
+}
+
+.slide-right-exit-active,
+.slide-left-exit-active {
+    opacity: 0;
+    transition: opacity 200ms ease;
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    /* Asegúrate de que esté sobre otros elementos */
+    background-color: #fff;
+    /* Fondo sólido para evitar transparencias */
+    padding: 10px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 5px;
+}
+
+.selected-block {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2) !important;
+    color: #000 !important;
+    font-weight: bold;
+}
+
+/* Puedes agregar esto en UpcomingAppointments.css */
+.appointment-status {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 600px) {
+    .appointment-status {
+        font-size: 0.85rem;
+        padding: 3px 8px;
+    }
+}
+
+.apt-main-container {
+    margin-bottom: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* === SIDEBAR DE FILTROS === */
+.apt-filters-sidebar {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: 0 0 24px 0 rgba(60, 63, 124, 0.08);
+}
+
+@media (max-width: 600px) {
+    .apt-filters-sidebar {
+        width: 100vw !important;
+        max-width: 300vw !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+    }
+
+    .apt-filters-list {
+        padding: 16px 4px 0 4px;
+    }
+
+    /* .apt-filters-name {
+        max-width: 80px;
+        font-size: 13px;
+    } */
+}
+
+.apt-filters-sidebar .p-sidebar {
+    border-radius: 1rem;
+    padding: 2rem;
+    background-color: #fff;
+}
+
+.apt-filters-sidebar h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.2rem;
+}
+
+.apt-filters-sidebar .text-color-secondary {
+    color: #6b7280;
+}
+
+.appointment-manager-sidebar {
+    width: 100%;
+    max-width: 620px;
+    background: #fff;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: 0 0 24px 0 rgba(60, 63, 124, 0.08);
+}
+
+@media (max-width: 600px) {
+    .appointment-manager-sidebar {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+    }
+}
+
+.appointment-action-response__container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    padding: 2rem;
+}
+
+.appointment-action-response__card {
+    max-width: 400px;
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .appointment-action-response__card {
+        max-width: 98vw;
+        padding: 1rem;
+    }
+}
+
+.apt-day-inview {
+    outline: 2px solid #2563eb;
+    outline-offset: 1px;
+    background: #e0e7ff;
+    transition: background 0.2s, outline 0.2s;
+}
+
+@media (max-width: 600px) {
+    .apt-day-inview {
+        outline-width: 1.5px;
+        background: #f1f5ff;
+    }
+}
+
+.selected-row {
+    background: #e0f7fa !important;
+    border-left: 4px solid #00bcd4;
+}
+
+.welcome-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+@media (max-width: 768px) {
+    .welcome-title {
+        text-align: center;
+    }
+}
+
+.timeline-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-left: 16px;
+    padding-left: 16px;
+    border-left: 2px solid #e0e0e0;
+}
+
+.timeline-item {
+    display: flex;
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: -24px;
+    top: 4px;
+    background-color: white;
+    border: 2px solid #4caf50;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    z-index: 1;
+}
+
+.timeline-content {
+    flex: 1;
+    padding-left: 12px;
+}
+
+.timeline-date {
+    font-size: 0.8rem;
+    color: #757575;
+    margin-bottom: 4px;
+}
+
+.timeline-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 2px 0;
+    color: #212121;
+}
+
+.timeline-user {
+    font-size: 0.85rem;
+    color: #616161;
+    margin: 0;
+}
+
+.timeline-status {
+    font-size: 0.85rem;
+    color: #333;
+    margin: 6px 0;
+}
+
+.timeline-comment {
+    font-size: 0.85rem;
+    margin-top: 4px;
+    background-color: #f1f1f1;
+    padding: 6px 10px;
+    border-radius: 4px;
+    color: #444;
+}
+
+.timeline-link {
+    font-size: 0.85rem;
+    color: #1976d2;
+    text-decoration: none;
+}
+.timeline-link:hover {
+    text-decoration: underline;
+}
+
+.floating-new-task-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #1b8f4f;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.floating-new-task-btn:hover {
+    background-color: #1b8f4f;
+}
+
+.employee-report-vgrid ::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+}
+
+/* icono a la izquierda sin superponer */
+.p-input-icon-left.search-input {
+    position: relative;
+}
+.p-input-icon-left.search-input > .p-inputtext {
+    padding-left: 2rem;
+}
+.p-input-icon-left.search-input .search-icon {
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+/* utilidades si no usas tailwind */
+.flex {
+    display: flex;
+}
+.items-center {
+    align-items: center;
+}
+.gap-2 {
+    gap: 0.5rem;
+}
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+.w-56 {
+    width: 14rem;
+}
+.w-64 {
+    width: 16rem;
+}
+
+
+
+/* (por si tu tema requiere más especificidad) */
+/* body .p-sidebar.tickets-sidebar { z-index: 20001 !important; position: fixed !important; }
+body .p-sidebar-mask.tickets-sidebar-mask { z-index: 20000 !important; } */
+
+/* Pon esto al FINAL de styles.css, después del theme de PrimeReact */
+/* body .p-sidebar-mask {
+  z-index: 6001 !important;
+}
+body .p-sidebar {
+  z-index: 6002 !important;
+  position: fixed !important; 
+} */
+
+/* evita nuevos stacking contexts */
+
+/* ⛔ Antes (rompe los inline)
+body .p-sidebar-mask { z-index: 6001 !important; }
+body .p-sidebar { z-index: 6002 !important; position: fixed !important; }
+*/
+
+/* ✅ Después (solo sidebars globales; NO aplica a inline) */
+body .p-sidebar-mask:not(.inline-inside-dialog-mask) {
+  z-index: 6001 !important;
+}
+body .p-sidebar:not(.inline-inside-dialog) {
+  z-index: 6002 !important;
+  position: fixed !important;
+}
+
+.p-multiselect-panel.p-connected-overlay-enter-done,
+.p-dropdown-panel.p-component.p-connected-overlay-enter-done,
+.p-datepicker.p-component.p-connected-overlay-enter-done,
+.p-overlaypanel.p-component.p-overlaypanel-enter-done,
+.p-tooltip.p-component.p-tooltip-top.p-tooltip-active {
+  z-index: 6003 !important;
+}
+
+/* ❌ Quita o comenta esta regla global, porque tapa el baseZIndex:
+.p-dialog-visible { z-index: 3000 !important; }
+*/
+
+/* ✅ Solo para estos diálogos */
+.zfix-mask { z-index: 7000 !important; }
+.zfix-dialog { z-index: 7001 !important; }
+
+.zfix-dialog .p-dialog-content {
+  overflow: visible !important;
+}
+
+/* ② Overlays DENTRO del dialog por encima de todo el contenido del dialog */
+.zfix-dialog .p-connected-overlay,
+.zfix-dialog .p-dropdown-panel,
+.zfix-dialog .p-treeselect-panel,
+.zfix-dialog .p-multiselect-panel,
+.zfix-dialog .p-datepicker,
+.zfix-dialog .p-overlaypanel {
+  z-index: 9002 !important;
+}
+
+
+/* Mover botón de filtros en Mobile/Tablet */
+@media (max-width: 991px) {
+  .flex.align-items-center.justify-content-end.gap-2.pr-4 {
+    display: flex !important;
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    z-index: 10; /* sobre el header */
+  }
+}
+
+/* Por defecto visible en desktop */
+.actions-toolbar {
+  display: flex !important;
+}
+
+/* Ocultar en mobile y tablet */
+@media (max-width: 991px) {
+  .actions-toolbar {
+    display: none !important;
+  }
+}
+
+
+/* .preimp-table .p-datatable-wrapper { overflow: auto; }
+.preimp-table .p-datatable-thead > tr > th { white-space: nowrap; }
+.preimp-table .p-datatable-tbody > tr > td { white-space: nowrap; } */

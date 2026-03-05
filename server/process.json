@@ -1,0 +1,60 @@
+{
+  "apps": [
+    {
+      "name": "motorhours-app",
+      "script": "./server.js",
+      "time": true,
+      "watch": true,
+      "env": {
+        "DB_HOST": "www.pavastecnologia.com",
+        "DB_USER": "usrpavashtg",
+        "DB_PASS": "9A12)WHFy$2p4v4s",
+        "DB_DATABASE": "bdmotorhours",
+        "PUBLIC_URL": "/",
+        "JWT_SECRET": "MOTORHOURSSECRETJWT",
+        "OPENAI_API_KEY": "",
+        "AI_MODEL": "gpt-4",
+        "AI_TEMPERATURE": 0.7,
+        "AI_MAX_TOKENS": 2000,
+        "AI_TOP_P": 1,
+        "MAIL_HOST_IMAP": "imap.hostinger.com",
+        "MAIL_PORT_IMAP": 993,
+        "MAIL_HOST": "smtp.hostinger.com",
+        "MAIL_PORT": 465,
+        "MAIL_USER": "admin@pavasapps.com",
+        "MAIL_ALIAS_USER": "Motorhours@pavasapps.com",
+        "MAIL_PASS": "P4v4s2025**.",
+        "TWILIO_ACCOUNT_SID": "",
+        "TWILIO_AUTH_TOKEN": "0ff283d840b2827ed4c07a457e7c422f",
+        "REDIS_HOST": "localhost",
+        "REDIS_PORT": 6379,
+        "SOCKET_CORS_ORIGIN": "http://localhost:3000"
+      },
+      "env_production": {
+        "DB_HOST": "www.pavastecnologia.com",
+        "DB_USER": "usrpavashtg",
+        "DB_PASS": "9A12)WHFy$2p4v4s",
+        "DB_DATABASE": "bdmotorhours",
+        "PUBLIC_URL": "/",
+        "JWT_SECRET": "MOTORHOURSSECRETJWT",
+        "OPENAI_API_KEY": "",
+        "AI_MODEL": "gpt-4",
+        "AI_TEMPERATURE": 0.7,
+        "AI_MAX_TOKENS": 2000,
+        "AI_TOP_P": 1,
+        "MAIL_HOST_IMAP": "imap.hostinger.com",
+        "MAIL_PORT_IMAP": 993,
+        "MAIL_HOST": "smtp.hostinger.com",
+        "MAIL_PORT": 465,
+        "MAIL_USER": "admin@pavasapps.com",
+        "MAIL_ALIAS_USER": "Motorhours@pavasapps.com",
+        "MAIL_PASS": "P4v4s2025**.",
+        "TWILIO_ACCOUNT_SID": "",
+        "TWILIO_AUTH_TOKEN": "0ff283d840b2827ed4c07a457e7c422f",
+        "REDIS_HOST": "localhost",
+        "REDIS_PORT": 6379,
+        "SOCKET_CORS_ORIGIN": "http://localhost:3000"
+      }
+    }
+  ]
+}

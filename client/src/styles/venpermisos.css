@@ -1,0 +1,112 @@
+.permission-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #ffffff;
+}
+
+.permisos-header {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.permission-info {
+    display: flex;
+    align-items: center;
+}
+
+.permission-icon {
+    font-size: 1em;
+    color: #ffffff;
+    background-color: #4CAF50;
+    padding: 10px;
+    border-radius: 5px;
+    margin-right: 15px;
+}
+
+.permission-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.permission-name {
+    font-size: 12px;
+    font-weight: bold;
+    color: #888;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.permission-description {
+    margin: 0;
+    color: #888;
+}
+
+.permission-switch {
+    margin-left: auto;
+}
+
+.parent-description {
+    color: #4CAF50;
+    margin: 1px 0;
+}
+
+.access-all {
+    float: right;
+    margin-left: 20px;
+}
+
+.access-label {
+    font-size: small;
+    margin-left: 4px;
+}
+
+/* Asegúrate de que el contenedor del sidebar ocupe toda la altura disponible */
+.p-sidebar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden; /* Para evitar que el contenido del sidebar desborde */
+}
+
+/* El contenido del sidebar debe ocupar todo el espacio disponible, excepto el footer */
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto; /* Permite el scroll vertical */
+    padding-bottom: 60px; /* Ajusta según la altura del footer */
+}
+
+/* El footer debe ser sticky y estar pegado al fondo del sidebar */
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    width: 95%;
+    padding: 1rem;
+    background: white;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Para navegadores basados en Webkit (Chrome, Safari, Edge) */
+.sidebar-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+    border: 2px solid #f5f5f5;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+    background-color: #b3b3b3;
+}

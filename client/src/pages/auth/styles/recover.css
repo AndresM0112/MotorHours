@@ -1,0 +1,35 @@
+/* .generated-password-recover {
+    margin-top: 10px;
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: left;
+    position: relative;
+    font-size: 16px;
+}
+
+.password-container-recover {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.password-text-recover {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    flex-grow: 1;
+}
+
+.copy-button-recover {
+    color: rgb(148, 148, 148);
+    border: none;
+    padding: 8px 10px;
+    margin-left: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+} */

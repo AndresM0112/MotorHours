@@ -1,0 +1,94 @@
+.user-sidebar-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.user-sidebar-header span {
+    display: block;
+    font-size: 14px;
+    color: #888;
+}
+
+.user-sidebar-header h4 {
+    margin: 5px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.user-sidebar-menu {
+    margin-bottom: 20px;
+}
+
+.user-sidebar-menu-item {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    color: #333;
+}
+
+.user-sidebar-menu-item:hover {
+    cursor: pointer;
+    background: var(--purple-100);
+}
+
+.menu-item-content {
+    display: flex;
+    align-items: center; /* Center icon vertically */
+}
+.menu-item-icon {
+    font-size: 18px; /* Adjust the size of the icon here */
+    margin-right: 10px;
+    color: #4CAF50; /* Adjust the color of the icon here */
+}
+
+.menu-item-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.menu-item-description {
+    font-size: 12px;
+    color: #888;
+    margin-top: 1px; /* Reduce the space between title and description */
+}
+
+.user-sidebar-notifications h5 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 14px;
+}
+
+.notification-list li span {
+    font-size: 12px;
+    color: #888;
+}
+
+.disabled {
+    pointer-events: none; /* Desactiva todos los eventos de puntero */
+    opacity: 0.5; /* Opcional: Reduce la opacidad para visualizar el estado deshabilitado */
+}

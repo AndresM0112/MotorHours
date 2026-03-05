@@ -1,0 +1,24 @@
+/* tabla compacta */
+.compactTable .p-datatable-thead > tr > th { padding: 6px 10px; }
+.compactTable .p-datatable-tbody > tr > td { padding: 6px 10px; vertical-align: middle; }
+
+/* inputs: tamaños */
+.cell-codigo .p-inputtext { width: 110px; }
+.cell-nombre .p-inputtext { width: 220px; } /* más pequeño que antes */
+
+/* multiselect compacto: que se vea 1 solo */
+.ms-one .p-multiselect-label {
+  display: inline-flex;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* acciones a la derecha y sin aire extra */
+.actions-cell {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}

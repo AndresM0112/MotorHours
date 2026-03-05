@@ -1,0 +1,22 @@
+.layout-footer {
+    position: fixed;
+    bottom: 0;
+    left: 260px;
+    width: calc(100% - 260px);
+    z-index: 990;
+    background: #f5faff;
+    border-top: 1px solid var(--surface-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 991.98px) {
+    .layout-footer {
+        left: 0 !important;
+        width: 100% !important;
+    }
+}

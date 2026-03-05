@@ -1,0 +1,231 @@
+.dashboard-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+/* ======================= */
+/* Panel Izquierdo */
+/* ======================= */
+.dashboard-left-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-header-illustration {
+    width: 120px;
+    /* height: auto; */
+    object-fit: contain;
+    opacity: 0.9;
+}
+
+.dashboard-progress-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.dashboard-progress-score {
+    display: inline-block;
+    background-color: #e6f4ea;
+    color: #28a745;
+    font-weight: bold;
+    padding: 12px 18px;
+    border-radius: 50%;
+    font-size: 18px;
+}
+
+.dashboard-progress-label {
+    margin: 10px 0 0;
+    color: #999;
+    font-size: 14px;
+}
+
+.dashboard-progress-status {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+/* ======================= */
+/* Estadísticas */
+/* ======================= */
+.dashboard-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.dashboard-stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+    text-align: center;
+}
+
+.dashboard-stat-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.dashboard-blue {
+    color: #377dff;
+}
+
+.dashboard-purple {
+    color: #9b51e0;
+}
+
+.dashboard-green {
+    color: #27ae60;
+}
+
+.dashboard-red {
+    color: #f2994a;
+}
+
+/* ======================= */
+/* Gráfico */
+/* ======================= */
+.dashboard-graph-section {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+}
+
+.dashboard-graph-section h4 {
+    margin: 0 0 5px;
+}
+
+.dashboard-graph-section p {
+    color: #27ae60;
+    margin-bottom: 10px;
+}
+
+.dashboard-avatar-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.dashboard-extra-count {
+    font-size: 14px;
+    color: #666;
+}
+
+.dashboard-graph-placeholder {
+    height: 160px;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+/* ======================= */
+/* Panel Derecho */
+/* ======================= */
+.dashboard-right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.dashboard-calendar-section {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+}
+
+.dashboard-calendar-section h4 {
+    margin: 0 0 10px;
+}
+
+.dashboard-meetings-section {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+}
+
+.dashboard-meetings-section h4 {
+    margin-bottom: 15px;
+}
+
+.dashboard-meeting-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dashboard-meeting-card:last-child {
+    border-bottom: none;
+}
+
+.dashboard-meeting-card h5 {
+    margin: 0;
+    font-size: 15px;
+}
+
+.dashboard-meeting-card p {
+    margin: 2px 0 0;
+    color: #999;
+    font-size: 13px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .dashboard-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-header-illustration {
+        display: none; /* Oculta la imagen en dispositivos móviles */
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dashboard-right-panel {
+        order: 2;
+    }
+
+    .dashboard-left-panel {
+        order: 1;
+    }
+
+    .dashboard-stat-card {
+        padding: 16px;
+    }
+
+    .dashboard-graph-section,
+    .dashboard-calendar-section,
+    .dashboard-meetings-section {
+        padding: 16px;
+    }
+}

@@ -1,0 +1,60 @@
+.analytics-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    background-color: var(--background, #fff);
+    transition: 0.3s;
+}
+
+.icon {
+    font-size: 1.4rem;
+    color: var(--color);
+    margin-bottom: 0.5rem;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.2rem;
+}
+
+.title {
+    font-size: 0.85rem;
+    color: #888;
+    font-weight: 500;
+}
+
+.total {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #1a1a1a;
+}
+
+.trend {
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    margin-top: 0.2rem;
+}
+
+.icon-trend {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.icon-trend.up {
+    color: #0f9d58;
+}
+
+.icon-trend.down {
+    color: #ea4335;
+}
+
+.chart-container {
+    width: 130px;
+}

@@ -1,0 +1,171 @@
+.layout-sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    /* evita scroll externo en el sidebar */
+}
+
+.layout-menu-container {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.layout-menu-container::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+}
+
+.layout-logo-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: 181e26;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0;
+    /* top y bottom iguales para centrar */
+    transition: all 0.3s ease-in-out;
+}
+
+.layout-sidebar-logo img {
+    background: white;
+    max-height: 6rem;
+    width: auto;
+    height: auto;
+    transition: all 0.3s ease-in-out;
+}
+
+.layout-topbar-logo img {
+    max-height: 1.2rem;
+    width: auto;
+    height: auto;
+    transition: all 0.3s ease-in-out;
+}
+
+.sidebar-collapsed .layout-topbar-logo img {
+    display: none;
+}
+
+.sidebar-collapsed .layout-topbar-logo img[src*="logo-mini"] {
+    display: block;
+    margin: 0 auto;
+}
+
+/* Reset general para <li> del menú */
+.layout-menu > li,
+.layout-submenu-fixed > li {
+    padding: 0;
+    /* quitar padding extra */
+    margin: 0;
+}
+
+/* Padres */
+.layout-menuitem-root-text {
+    font-weight: bold;
+    font-size: 14px !important;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Íconos */
+.layout-menuitem-root-text i,
+.layout-submenu-fixed a i {
+    margin-right: 10px;
+}
+
+/* Hijos (ya no anidados) */
+.layout-submenu-fixed {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.layout-submenu-fixed > li {
+    margin: 0;
+}
+
+.layout-submenu-fixed a {
+    color: #fff !important;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Hover y activo */
+.layout-submenu-fixed a:hover,
+.layout-submenu-fixed a.router-link-active {
+    /* color: #4CAF50 !important; */
+    font-weight: bold;
+}
+
+/* Elimina cualquier padding heredado del UL padre */
+ul.layout-menu,
+ul.layout-submenu-fixed {
+    padding-left: 0 !important;
+}
+
+.icon-menu {
+    font-size: 1.4rem;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+@media (min-width: 992px) {
+    .sidebar-collapsed .layout-menuitem-root-text {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .sidebar-collapsed .layout-topbar-logo {
+        height: 2rem;
+        margin-bottom: 0;
+    }
+
+    .sidebar-collapsed .layout-topbar-logo img {
+        max-height: 2.5rem;
+        height: auto;
+        width: auto;
+    }
+
+    .layout-menuitem-root-text {
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+}
+
+.layout-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.733);
+    /* opacidad del fondo */
+    z-index: 990;
+    /* justo debajo del sidebar (991) */
+    backdrop-filter: blur(2px);
+    /* opcional: desenfoque sutil */
+    transition: opacity 0.3s ease;
+}
+
+@media (min-width: 992px) {
+    .layout-mask {
+        display: none !important;
+    }
+}
+@media (max-width: 768px) {
+    .layout-topbar-logo img {
+        max-height: 4.2rem;
+    }
+}

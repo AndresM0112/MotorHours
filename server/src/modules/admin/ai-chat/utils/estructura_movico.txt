@@ -1,0 +1,285 @@
+
+tabla_name: tbl_actividad
+
+variables
+- act_id, int(11), NO, PRI, auto_increment
+- act_nombre, varchar(255), NO, , 
+- act_descripcion, text, YES, , 
+- est_id, int(11), YES, MUL, 
+- act_usu_reg, int(11), YES, MUL, 
+- act_fec_reg, timestamp, NO, , 
+- act_usu_act, varchar(100), YES, , 
+- act_fec_act, timestamp, NO, , on update current_timestamp()
+
+tabla_name: tbl_citas
+
+variables
+- cit_id, int(11), NO, PRI, auto_increment
+- usu_id, int(11), NO, MUL, 
+- hor_id, int(11), NO, MUL, 
+- esc_id, int(11), NO, MUL, 
+- cit_notas, text, YES, , 
+- cit_usu_reg, int(11), YES, MUL, 
+- cit_fec_reg, timestamp, NO, , 
+- cit_usu_act, varchar(100), YES, , 
+- cit_fec_act, timestamp, NO, , on update current_timestamp()
+
+tabla_name: tbl_ciudad
+
+variables
+- ciu_id, int(11), NO, PRI, auto_increment
+- ciu_nombre, varchar(100), NO, , 
+- pai_id, int(11), NO, MUL, 
+
+tabla_name: tbl_confirmacion_asistencia
+
+variables
+- con_id, int(11), NO, PRI, auto_increment
+- cit_id, int(11), NO, MUL, 
+- usu_id, int(11), NO, MUL, 
+- con_medio, varchar(50), YES, , 
+- con_estado, varchar(50), YES, , 
+- con_fec_confirmacion, timestamp, NO, , 
+
+tabla_name: tbl_estado_cita
+
+variables
+- esc_id, int(11), NO, PRI, auto_increment
+- esc_nombre, varchar(100), NO, , 
+
+tabla_name: tbl_estados
+
+variables
+- est_id, int(11), NO, PRI, auto_increment
+- est_nombre, varchar(100), NO, , 
+
+tabla_name: tbl_genero
+
+variables
+- gen_id, int(11), NO, PRI, auto_increment
+- gen_nombre, varchar(100), NO, , 
+
+tabla_name: tbl_modulos
+
+variables
+- mod_id, int(11), NO, PRI, auto_increment
+- mod_nombre, varchar(100), YES, , 
+
+tabla_name: tbl_motivos
+
+variables
+- mot_id, int(11), NO, PRI, auto_increment
+- mot_nombre, varchar(255), NO, , 
+- est_id, int(11), YES, MUL, 
+- mot_usu_reg, int(11), YES, MUL, 
+- mot_fec_reg, timestamp, YES, , 
+- mot_usu_act, varchar(100), YES, , 
+- mot_fec_act, timestamp, YES, , on update current_timestamp()
+
+tabla_name: tbl_motivos_modulos
+
+variables
+- mmo_id, int(11), NO, PRI, auto_increment
+- mot_id, int(11), NO, MUL, 
+- mod_id, int(11), NO, MUL, 
+
+tabla_name: tbl_notificaciones
+
+variables
+- not_id, int(11), NO, PRI, auto_increment
+- usu_id, int(11), NO, MUL, 
+- not_prioridad, varchar(50), YES, , 
+- not_titulo, varchar(150), NO, , 
+- not_mensaje, text, NO, , 
+- not_tipo, varchar(50), YES, , 
+- not_modulo, varchar(100), YES, , 
+- not_accion, varchar(100), YES, , 
+- not_data, longtext, YES, , 
+- not_fec_env, timestamp, NO, , 
+- not_visto, tinyint(1), YES, , 
+- not_fec_visto, timestamp, YES, , 
+- not_fec_act, timestamp, NO, , on update current_timestamp()
+
+tabla_name: tbl_otp_codigos
+
+variables
+- id, int(11), NO, PRI, auto_increment
+- usu_id, int(11), NO, MUL, 
+- codigo, varchar(6), NO, MUL, 
+- fecha_generado, timestamp, NO, MUL, 
+- usado, tinyint(1), YES, , 
+
+tabla_name: tbl_pais
+
+variables
+- pai_id, int(11), NO, PRI, auto_increment
+- pai_nombre, varchar(100), NO, , 
+
+tabla_name: tbl_perfil
+
+variables
+- prf_id, int(11), NO, PRI, auto_increment
+- prf_nombre, varchar(255), YES, , 
+- est_id, int(11), YES, MUL, 
+- prf_usu_reg, int(11), YES, MUL, 
+- prf_fec_reg, timestamp, YES, , 
+- prf_usu_act, varchar(255), YES, , 
+- prf_fec_act, timestamp, YES, , on update current_timestamp()
+
+tabla_name: tbl_perfil_ventanas
+
+variables
+- pve_id, int(11), NO, PRI, auto_increment
+- prf_id, int(11), NO, MUL, 
+- ven_id, int(11), NO, MUL, 
+
+tabla_name: tbl_permisos
+
+variables
+- per_id, int(11), NO, PRI, auto_increment
+- per_nombre, varchar(255), YES, , 
+- ven_id, int(11), YES, MUL, 
+- per_orden, int(11), YES, , 
+
+tabla_name: tbl_permisos_perfil
+
+variables
+- pep_id, int(11), NO, PRI, auto_increment
+- per_id, int(11), NO, MUL, 
+- prf_id, int(11), NO, MUL, 
+
+tabla_name: tbl_permisos_usuarios
+
+variables
+- peu_id, int(11), NO, PRI, auto_increment
+- per_id, int(11), NO, MUL, 
+- usu_id, int(11), NO, MUL, 
+
+tabla_name: tbl_permisos_ventana
+
+variables
+- pev_id, int(11), NO, PRI, auto_increment
+- prf_id, int(11), YES, , 
+- ven_id, int(11), YES, , 
+
+tabla_name: tbl_personal_actividad
+
+variables
+- pfa_id, int(11), NO, PRI, auto_increment
+- act_id, int(11), NO, MUL, 
+- usu_id, int(11), NO, MUL, 
+- pfa_rol, varchar(100), YES, , 
+
+tabla_name: tbl_prioridad
+
+variables
+- pri_id, int(11), NO, PRI, auto_increment
+- pri_nombre, varchar(255), YES, , 
+
+tabla_name: tbl_recuperar
+
+variables
+- rec_id, int(11), NO, PRI, auto_increment
+- rec_codigo, mediumtext, NO, , 
+- usu_id, int(11), NO, , 
+- rec_estado, bigint(20), NO, , 
+- rec_email, varchar(255), YES, , 
+- rec_fecha, datetime, YES, , 
+
+tabla_name: tbl_recuperar_cuenta
+
+variables
+- res_id, int(11), NO, PRI, auto_increment
+- usu_id, int(11), NO, MUL, 
+- usu_email, varchar(255), NO, , 
+- res_token, varchar(255), NO, , 
+- res_code_temp, int(11), NO, , 
+- res_created_at, timestamp, YES, , 
+
+tabla_name: tbl_reglas
+
+variables
+- reg_id, int(11), NO, PRI, auto_increment
+- reg_ipc, double, YES, , 
+- reg_margen, double, YES, , 
+- reg_const, double, YES, , 
+- reg_tenant_id, varchar(255), YES, , 
+- reg_client_id, varchar(255), YES, , 
+- reg_client_secret, varchar(255), YES, , 
+- reg_usuario, varchar(255), YES, , 
+- reg_biblioteca, varchar(255), YES, , 
+- reg_carpeta, varchar(255), YES, , 
+- reg_dias_ven_cotizacion, int(11), YES, , 
+- reg_usu_act, varchar(255), YES, , 
+- reg_fec_act, timestamp, YES, , on update current_timestamp()
+
+tabla_name: tbl_sesion_actividad
+
+variables
+- sac_id, int(11), NO, PRI, auto_increment
+- act_id, int(11), NO, MUL, 
+- tps_id, int(11), NO, MUL, 
+- sac_nombre, varchar(255), YES, , 
+- sac_duracion, int(11), NO, , 
+- sac_usu_reg, int(11), YES, MUL, 
+- sac_fec_reg, timestamp, NO, , 
+- sac_usu_act, varchar(100), YES, , 
+- sac_fec_act, timestamp, NO, , on update current_timestamp()
+
+tabla_name: tbl_tipo_documento
+
+variables
+- tpd_id, int(11), NO, PRI, auto_increment
+- tpd_nombre, varchar(100), NO, , 
+
+tabla_name: tbl_tipo_sesion
+
+variables
+- tps_id, int(11), NO, PRI, auto_increment
+- tps_nombre, varchar(100), NO, , 
+
+tabla_name: tbl_usuarios
+
+variables
+- usu_id, int(11), NO, PRI, auto_increment
+- tpd_id, int(11), YES, MUL, 
+- usu_documento, varchar(255), YES, , 
+- usu_nombre, varchar(255), YES, , 
+- usu_apellido, varchar(255), YES, , 
+- usu_fec_nacimiento, date, YES, , 
+- usu_telefono, varchar(11), YES, , 
+- gen_id, int(11), YES, MUL, 
+- pai_id, int(11), YES, MUL, 
+- ciu_id, int(11), YES, MUL, 
+- usu_usuario, varchar(100), YES, , 
+- usu_correo, varchar(255), YES, , 
+- usu_clave, varchar(255), YES, , 
+- prf_id, int(11), YES, MUL, 
+- usu_valor_hora, double, YES, , 
+- usu_acceso, smallint(6), YES, , 
+- usu_cambio, smallint(6), YES, , 
+- est_id, int(11), YES, MUL, 
+- usu_reg, int(11), YES, MUL, 
+- usu_fec_reg, timestamp, YES, , 
+- usu_usu_act, varchar(255), YES, , 
+- usu_fec_act, timestamp, YES, , on update current_timestamp()
+- usu_verificado, smallint(6), YES, , 
+
+tabla_name: tbl_usuarios_ventanas
+
+variables
+- uve_id, int(11), NO, PRI, auto_increment
+- usu_id, int(11), NO, MUL, 
+- ven_id, int(11), NO, MUL, 
+
+tabla_name: tbl_ventanas
+
+variables
+- ven_id, int(11), NO, PRI, auto_increment
+- ven_descripcion, varchar(255), NO, , 
+- ven_padre, int(11), YES, , 
+- ven_url, varchar(255), YES, , 
+- ven_icono, varchar(255), YES, , 
+- ven_orden, int(11), YES, , 
+- ven_nombre, varchar(255), YES, , 
+- ven_tipo, int(11), YES, , 

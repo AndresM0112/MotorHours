@@ -1,0 +1,42 @@
+/* NotFoundPage.css */
+.error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    background-color: transparent; /* Fondo transparente */
+}
+
+.error-image {
+    max-width: 80%;
+    height: auto;
+}
+
+.error-h1 {
+    color: #e94560;
+    text-align: center;
+    margin: 20px;
+}
+
+.error-p {
+    text-align: center;
+}
+
+.link-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.more-link {
+    text-decoration: none;
+    color: #ffffff; /* Color blanco para el texto del botón */
+    background-color: #e94560;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.more-link:hover {
+    background-color: #402e2a;
+}

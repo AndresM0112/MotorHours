@@ -1,0 +1,91 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adapta dinámicamente */
+    gap: 16px; /* Espacio entre tarjetas */
+    justify-content: center; /* Centra las tarjetas */
+    padding: 16px;
+    margin: 0 auto;
+}
+
+.grid-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.counter {
+    margin-left: auto; /* Empuja el contador hacia la derecha de la tarjeta */
+    color: #333; /* Texto oscuro para contraste */
+    font-size: 2rem; /* Tamaño de la fuente del contador */
+    padding: 4px 8px; /* Padding alrededor del texto */
+    font-weight: bold; /* Negrita para el número */
+}
+
+.card-custom {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    position: relative; /* Posición relativa para posicionamiento absoluto del contador */
+    width: 100%;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.card-custom:hover {
+    transform: scale(1.05);
+}
+
+.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px; /* Ancho fijo */
+    height: 50px; /* Altura fija para mantener forma cuadrada */
+    min-width: 50px; /* Asegura un ancho mínimo */
+    min-height: 50px; /* Asegura una altura mínima */
+    border-radius: 10px; /* Hace el contenedor completamente redondo */
+    margin-right: 16px; /* Espacio a la derecha del icono */
+}
+
+.card-custom h5 {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+    text-align: left; /* Alinear texto a la izquierda */
+}
+
+/* Diseño responsivo para móviles */
+@media screen and (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr); /* Dos tarjetas por fila */
+        gap: 12px; /* Reducir espacio entre tarjetas */
+    }
+
+    .card-custom {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .counter {
+        position: static; /* En móviles, el contador no necesita estar flotando a la derecha */
+        margin-left: 0;
+        margin-top: 8px; /* Espacio adicional en diseño vertical */
+    }
+
+    .icon {
+        margin-right: 0; /* Eliminar margen derecho para diseño vertical */
+        margin-bottom: 8px; /* Espaciado inferior */
+    }
+
+    .card-custom h5 {
+        font-size: 14px; /* Reducir tamaño de texto */
+    }
+}
+
+.active-card {
+    border-radius: 12px;
+    cursor: pointer;
+}
