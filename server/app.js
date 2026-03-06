@@ -28,7 +28,16 @@ app.use(morgan("dev")); // Logging HTTP
 // app.use(httpLogger);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    const allowed = (process.env.CORS_ORIGINS || "http://localhost:3000")
+      .split(",")
+      .map((o) => o.trim());
+    if (!origin || allowed.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origen no permitido → ${origin}`));
+  },
+  credentials: true,
+}));
 app.use(cookieParser());
 // app.use(helmetMiddleware); // Seguridad headers
 app.use(compressionMiddleware);
