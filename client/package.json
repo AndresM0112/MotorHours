@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "proxy": "http://localhost:5042",
-    "homepage": "https://pavastecnologia.com/motorhours/",
+    "homepage": ".",
     "license": "MIT",
     "dependencies": {
         "@cyntler/react-doc-viewer": "1.10.1",
