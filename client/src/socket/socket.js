@@ -2,8 +2,7 @@ import { io } from "socket.io-client";
 
 // Namespace y URL del socket
 const NAMESPACE = "/socket/mth";
-// const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || process.env.REACT_APP_API_URL || "http://localhost:3000";
 
 
 

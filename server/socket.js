@@ -72,13 +72,16 @@ import { setIO } from "./src/common/configs/socket.manager.js"; // 👈 IMPORTAN
 
 export function initSocket(server) {
   // Crear instancia de Socket.IO
+  const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000")
+    .split(",")
+    .map((o) => o.trim());
+
   const io = new SocketIOServer(server, {
     cors: {
-      origin: [
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "https://pavastecnologia.com",
-      ],
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error(`Socket CORS: origen no permitido → ${origin}`));
+      },
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: true,
     },
