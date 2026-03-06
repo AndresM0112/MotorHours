@@ -1,10 +1,17 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || "";
+
 // Configurar un interceptor de solicitud para añadir el token de autenticación y otros datos del usuario
 axios.interceptors.request.use(
     (config) => {
         config.withCredentials = true; // Incluir cookies en las solicitudes
+
+        // Prefijar baseURL si la URL no es absoluta
+        if (API_BASE_URL && config.url && !config.url.startsWith("http")) {
+            config.url = `${API_BASE_URL}/${config.url.replace(/^\//, "")}`;
+        }
 
         // Obtener datos del usuario y el token de las cookies
         const tokenSecurity = Cookies.get("tokenMOTORHOURS");
