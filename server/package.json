@@ -72,6 +72,6 @@
     "@azure/identity": "3.4.2"
   },
   "engines": {
-    "node": ">=14.18.0"
+     "node": "18.x"
   }
 }
