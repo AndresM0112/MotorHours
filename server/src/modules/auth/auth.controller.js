@@ -105,7 +105,7 @@ export const loginController = async (req, res, next) => {
       maxAge: 60 * 60 * 24 * 1000,        // 24 horas
     });
 
-    // Retornar la respuesta JSON sin el token
+    // Retornar la respuesta JSON con el token incluido (para clientes cross-origin)
     return res.json({
       usuId,
       usuFoto,
@@ -117,6 +117,7 @@ export const loginController = async (req, res, next) => {
       perfil,
       agenda,
       instructor,
+      token,
       permisos: rowsPermisos,
       cambioclave,
     });
