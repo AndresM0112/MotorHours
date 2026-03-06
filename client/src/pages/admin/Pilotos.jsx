@@ -290,51 +290,94 @@ const Pilotos = () => {
   // Card header para mobile
   const headerCardTemplate = (item) => {
     const name = item?.name || "Sin nombre";
-    const phone = item?.phone || "—";
+    const motosCount = item?.motos?.length || 0;
+    const initials = name.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
 
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 12,
-          flexWrap: "wrap",
-        }}
-      >
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ fontWeight: 600, fontSize: 14 }}>{name}</span>
-          <div style={{ fontSize: 12, color: "#6b7280" }}>{phone}</div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, width: "100%" }}>
+        {/* Avatar + nombre */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: 1 }}>
+          <div style={{
+            width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
+            background: "#eff6ff",
+            border: "2px solid #3b82f6",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontWeight: 700, fontSize: 13, color: "#2563eb"
+          }}>
+            {initials || "?"}
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {name}
+            </div>
+            <div style={{ fontSize: 11, color: "#6b7280" }}>Piloto #{item.id}</div>
+          </div>
         </div>
+        {/* Badge motos */}
+        {motosCount > 0 && (
+          <div style={{
+            flexShrink: 0, display: "flex", alignItems: "center", gap: 4,
+            padding: "3px 10px", borderRadius: 20,
+            backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0"
+          }}>
+            <span style={{ fontSize: 13 }}>🏍️</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#16a34a" }}>{motosCount}</span>
+          </div>
+        )}
       </div>
     );
   };
 
-  const bodyCardTemplate = (item) => (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        fontSize: 12,
-        color: "#374151",
-      }}
-    >
-      <div>
-        <strong>Email:</strong> {item.email || "—"}
+  const bodyCardTemplate = (item) => {
+    const motos = item?.motos || [];
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+        {/* Separador */}
+        <div style={{ height: 1, background: "#f3f4f6", margin: "6px 0 10px" }} />
+
+        {/* Teléfono y email */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 10 }}>
+          {item.phone && (
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <i className="pi pi-phone" style={{ fontSize: 12, color: "#6b7280" }}></i>
+              <span style={{ fontSize: 13, color: "#374151" }}>{item.phone}</span>
+            </div>
+          )}
+          {item.email && (
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <i className="pi pi-envelope" style={{ fontSize: 12, color: "#6b7280" }}></i>
+              <span style={{ fontSize: 13, color: "#374151", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.email}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Motos */}
+        {motos.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+            {motos.map((m) => (
+              <span key={m.id} style={{
+                display: "inline-flex", alignItems: "center", gap: 4,
+                padding: "2px 8px", borderRadius: 12,
+                background: "#f8fafc", border: "1px solid #e2e8f0",
+                fontSize: 11, color: "#475569", fontWeight: 500
+              }}>
+                🏍️ {m.type}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Fecha */}
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <i className="pi pi-calendar" style={{ fontSize: 11, color: "#9ca3af" }}></i>
+          <span style={{ fontSize: 12, color: "#6b7280" }}>
+            {item.createdAt ? String(item.createdAt) : "—"}
+          </span>
+        </div>
       </div>
-      <div>
-        <strong>Motos:</strong>{" "}
-        {item.motos && item.motos.length > 0
-          ? item.motos.map((m) => m.type).join(", ")
-          : "—"}
-      </div>
-      <div>
-        <strong>Fecha registro:</strong>{" "}
-        {item.createdAt ? String(item.createdAt) : "—"}
-      </div>
-    </div>
-  );
+    );
+  };
 
   return firstLoad ? (
     <SkeletonMasterLoader />

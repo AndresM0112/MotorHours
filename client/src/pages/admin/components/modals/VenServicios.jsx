@@ -45,13 +45,14 @@ const AlistamientoItemsSection = ({ alistamientos, values, setValue, readOnly })
             alistamientos.forEach(item => {
                 const existingItem = existingItems.find(ei => ei.id === item.id);
                 initialStates[item.id] = {
-                    realizada: existingItem?.completed ?? null,
-                    observaciones: existingItem?.notes ?? ""
+                    // Soportar tanto formato API (completed/notes) como formato local (realizada/observaciones)
+                    realizada: existingItem?.completed ?? existingItem?.realizada ?? null,
+                    observaciones: existingItem?.notes ?? existingItem?.observaciones ?? ""
                 };
             });
             setAlistamientoStates(initialStates);
         }
-    }, [alistamientos, values.alistamiento_items]);
+    }, [alistamientos, values.items]);
 
     const handleRealizadaChange = (itemId, value) => {
         setAlistamientoStates(prev => {
@@ -313,12 +314,18 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
 
             const row = {
                 id: servicioId || data.id,
-                pilotoId: values.pilotoId, // Mantener pilotoId para la tabla
-                pilotName: selectedPiloto?.name || "Sin piloto", // Nombre del piloto
+                pilotoId: values.pilotoId,
+                pilotName: selectedPiloto?.name || "Sin piloto",
                 hours: payload.moto_hours,
                 serviceType: payload.service_type,
                 bikeType: selectedPiloto?.motos?.[0]?.type || "N/A",
-                items: alistamientosConNombres,
+                // Guardar en formato API (completed/notes) para consistencia al reabrir
+                items: alistamientosConNombres.map(item => ({
+                    id: item.id,
+                    completed: item.realizada,
+                    notes: item.observaciones || "",
+                    description: item.description
+                })),
                 createdAt: data.createdAt || new Date().toISOString(),
             };
 

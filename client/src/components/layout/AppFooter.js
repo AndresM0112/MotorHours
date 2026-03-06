@@ -3,7 +3,7 @@ import React from "react";
 export const AppFooter = (props) => {
     return (
         <div className="layout-footer" id="divfooter">
-            <img
+            {/* <img
                 src={
                     props.layoutColorMode === "light"
                         ? `${process.env.PUBLIC_URL}/images/logos/logoStayMini.png`
@@ -12,7 +12,7 @@ export const AppFooter = (props) => {
                 alt="Logo"
                 height="20"
                 className="mr-2"
-            />
+            /> */}
             by
             <span className="font-medium ml-2">Andres Murillo</span>
         </div>

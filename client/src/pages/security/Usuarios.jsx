@@ -32,11 +32,7 @@ import {
     countUsersAPI,
     paginationUsersAPI,
     getProfilesAPI,
-    importEmployeesAPI,
 } from "@api/requests";
-
-// import { importPropertiesAPI } from "@api/blocks.Api";
-// import { importPropertiesAPI } from "@api/requests/blocksApi";  // Eliminado para taller
 
 // Utilities
 import { estados, getInitials, propsSelect } from "@utils/converAndConst";
@@ -51,7 +47,6 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { TabPanel, TabView } from "primereact/tabview";
 import EmptyState from "@components/data/EmptyState";
 import { Avatar } from "primereact/avatar";
-import PreImportEmpleados from "./components/PreImportEmpleados";
 import InfiniteScrollCards from "@components/ui/InfiniteScrollCards";
 
 // Lazy Loaded Components
@@ -172,22 +167,10 @@ const Usuarios = () => {
 
     const { hasPermission } = usePermissions();
 
-    const canCreate = hasPermission(
-        "security",
-        pathname.includes("clients") ? "clients" : pathname.includes("employees") ? "employees" : "users",
-        "create"
-    );
+    const canCreate = hasPermission("security", "users", "create");
     const canAssignPermission = hasPermission("security", "users", "assignPermission");
-    const canEdit = hasPermission(
-        "security",
-        pathname.includes("clients") ? "clients" : pathname.includes("employees") ? "employees" : "users",
-        "edit"
-    );
-    const canDelete = hasPermission(
-        "security",
-        pathname.includes("clients") ? "clients" : pathname.includes("employees") ? "employees" : "users",
-        "delete"
-    );
+    const canEdit = hasPermission("security", "users", "edit");
+    const canDelete = hasPermission("security", "users", "delete");
 
     const { showSuccess } = useContext(ToastContext);
     const handleApiError = useHandleApiError();
@@ -196,11 +179,6 @@ const Usuarios = () => {
     const overlayFiltersRef = useRef(null);
     const [firstLoad, setFirstLoad] = useState(true);
     const [listperfiles, setListperfiles] = useState([]);
-    const [isClient, setIsClient] = useState(false);
-    const [isEmployee, setIsEmployee] = useState(false);
-
-    const [importVisible, setImportVisible] = useState(false);
-    const [importBlocksVisible, setImportBlocksVisible] = useState(false);
     
 
     const showOverlayFilters = (event) => {
@@ -220,29 +198,12 @@ const Usuarios = () => {
         }
     };
 
+    
     useEffect(() => {
-        if (pathname.includes("clients")) {
-            setIsEmployee(false);
-            setIsClient(true);
-            setFiltros((prev) => ({
-                ...prev,
-                prfId: 3,
-            }));
-        } else if (pathname.includes("employees")) {
-            setIsClient(false);
-            setIsEmployee(true);
-            setFiltros((prev) => ({
-                ...prev,
-                prfId: 14,
-            }));
-        } else {
-            setIsEmployee(false);
-            setIsClient(false);
-            setFiltros((prev) => ({
-                ...prev,
-                prfId: null,
-            }));
-        }
+        setFiltros((prev) => ({
+            ...prev,
+            prfId: null,
+        }));
     }, [location]);
 
     useEffect(() => {
@@ -267,7 +228,7 @@ const Usuarios = () => {
             usuario: "",
             estado: null,
         }),
-        [idusuario, isClient, isEmployee]
+        [idusuario]
     );
 
     const columnsConfig = [
@@ -443,7 +404,7 @@ const Usuarios = () => {
                 disabled: !canEdit,
                 color: "#fda53a",
             },
-            !pathname.includes("clients", "employees") && {
+            {
                 label: `Asignar Permisos`,
                 icon: "pi pi-lock",
                 command: () => {
@@ -452,7 +413,7 @@ const Usuarios = () => {
                 disabled: !canAssignPermission,
                 color: "#0eb0e9",
             },
-        ].filter(Boolean);
+        ];
 
         if (![1, 2, 3].includes(perfil)) {
             menuItems.push({
@@ -530,22 +491,9 @@ const Usuarios = () => {
                 </div>
 
                 <RightToolbar
-                    label="Crear"
+                    label="Crear Usuario"
                     onClick={() => venUsuario.current.newUser()}
                     disabled={!canCreate}
-                />
-
-                {/* <Button
-                    icon="pi pi-upload"
-                    label="Importar"
-                    className="p-button-sm p-button-rounded ml-2 p-button-help"
-                    onClick={() => setImportVisible(true)}
-                /> */}
-                <Button
-                    icon="pi pi-upload"
-                    label="Importar Propiedades"
-                    className="p-button-sm p-button-rounded ml-2 p-button-help"
-                    onClick={() => setImportBlocksVisible(true)}
                 />
             </>
         ),
@@ -739,17 +687,9 @@ const Usuarios = () => {
                     />
 
                     <PageHeader
-                        page={
-                            pathname.includes("clients") ? "Home" : pathname.includes("employees") ? "Home" : "Seguridad"
-                        }
-                        title={
-                            pathname.includes("clients")
-                                ? "Clientes"
-                                : pathname.includes("employees")
-                                    ? "Empleados"
-                                    : "Usuarios"
-                        }
-                        description="Administra los usuarios del sistema, asigna perfiles, permisos y gestiona su acceso."
+                        page="Seguridad"
+                        title="Usuarios"
+                        description="Administra los usuarios del taller, asigna perfiles, permisos y gestiona su acceso al sistema."
                     />
 
                     <VenUsuario
@@ -765,8 +705,6 @@ const Usuarios = () => {
                         canAssignPermission={canAssignPermission}
                         canDelete={canDelete}
                         listperfiles={listperfiles}
-                        isClientUrl={isClient}
-                        isEmployeeUrl={isEmployee}
                         contarUsuarios={contarUsuarios}
                     />
 
@@ -783,7 +721,6 @@ const Usuarios = () => {
                                 {isDesktop ? (
                                     <>
                                         <TabView
-
                                             activeIndex={
                                                 filtros.prfId === null
                                                     ? 0
@@ -794,9 +731,8 @@ const Usuarios = () => {
                                                 setFiltros({ ...filtros, prfId: selectedTab });
                                             }}
                                             scrollable={true}
-
                                         >
-                                            {!isClient && !isEmployee && renderTabs}
+                                            {renderTabs}
                                         </TabView>
 
                                         {/* <DataTableComponentMemo
@@ -885,7 +821,7 @@ const Usuarios = () => {
                                                 setFiltros({ ...filtros, prfId: selectedTab });
                                             }}
                                         >
-                                            {!isClient && !isEmployee && renderTabs}
+                                            {renderTabs}
                                         </TabView>
 
                                         {state.datos?.length <= 0 && !loading.table ? (
@@ -1045,34 +981,6 @@ const Usuarios = () => {
                             </div>
                         </div>
                     </Suspense>
-
-                    <PreImportEmpleados
-                        visible={importVisible}
-                        onHide={() => setImportVisible(false)}
-                        onImported={() => {
-                            reloadData();
-                            contarUsuarios();
-                        }}
-                        importApi={importEmployeesAPI}
-                        toast={{ success: showSuccess, error: (m) => handleApiError({ message: m }) }}
-                    />
-
-                {/* TODO: Componente de importación eliminado para taller
-                    <PreImportBloquesLocalesOwners
-                        visible={importBlocksVisible}
-                        onHide={() => setImportBlocksVisible(false)}
-                        onImported={() => {
-                            setImportBlocksVisible(false);
-                        }}
-                        importApi={importPropertiesAPI}
-                        toast={{
-                            success: (m) => showSuccess(m),
-                            error: (m) => handleApiError({ message: m }),
-                            warn: (m) => showSuccess(m),
-                            info: (m) => showSuccess(m),
-                        }}
-                    />
-                */}
                 </div>
             )}
         </>

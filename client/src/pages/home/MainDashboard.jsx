@@ -1,9 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
+import { useHistory } from "react-router-dom";
+import { getAllPilotosAPI } from "../../api/requests/pilotosAPI";
+import { getAllServiciosAPI } from "../../api/requests/ServiciosAPI";
+import { getAllAlistamientosAPI } from "../../api/requests/AlistamientoAPI";
+import VenPilotos from "../admin/components/modals/VenPilotos";
+import VenServicios from "../admin/components/modals/VenServicios";
+import VenAlistamiento from "../admin/components/modals/VenAlistamiento";
 import "./styles/MainDashboard.css";
 
 const MainDashboard = () => {
+    const history = useHistory();
+    
+    // Referencias para los modales
+    const pilotoModalRef = useRef(null);
+    const servicioModalRef = useRef(null);
+    const alistamientoModalRef = useRef(null);
+    
+    const [stats, setStats] = useState({
+        totalPilotos: 0,
+        totalServicios: 0
+    });
+    const [serviciosRecientes, setServiciosRecientes] = useState([]);
+    const [alistamientosMasSolicitados, setAlistamientosMasSolicitados] = useState([]);
+    const [loading, setLoading] = useState(true);
+
     const header = (
         <span>
             <i className="pi pi-wrench mr-2"></i>
@@ -11,32 +33,125 @@ const MainDashboard = () => {
         </span>
     );
 
-    // Datos de ejemplo para el dashboard
-    const stats = {
-        motosEnTaller: 12,
-        citasHoy: 8,
-        serviciosCompletados: 5,
-        ventasHoy: 850000
+    // Cargar datos reales al montar el componente
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                setLoading(true);
+                
+                // Cargar pilotos, servicios y alistamientos en paralelo
+                const [pilotosResponse, serviciosResponse, alistamientosResponse] = await Promise.all([
+                    getAllPilotosAPI(),
+                    getAllServiciosAPI(),
+                    getAllAlistamientosAPI()
+                ]);
+
+                // Actualizar stats con datos reales
+                setStats({
+                    totalPilotos: pilotosResponse?.data?.length || 0,
+                    totalServicios: serviciosResponse?.data?.length || 0
+                });
+
+                // Procesar servicios recientes (últimos 5)
+                const servicios = serviciosResponse?.data || [];
+                const serviciosFormateados = servicios
+                    .slice(0, 5) // Tomar solo los primeros 5 (ya vienen ordenados por fecha desc)
+                    .map(servicio => ({
+                        id: servicio.id,
+                        tipo: servicio.serviceType === 'ALISTAMIENTO' ? 'Alistamiento' : 'Reparación',
+                        piloto: servicio.pilotName || 'Sin asignar',
+                        fecha: new Date(servicio.createdAt).toLocaleDateString('es-ES'),
+                        estado: 'Completado',
+                        bikeType: servicio.bikeType || 'N/A',
+                        hours: servicio.hours,
+                        _raw: servicio
+                    }));
+                
+                setServiciosRecientes(serviciosFormateados);
+
+                // Procesar alistamientos más solicitados
+                const alistamientos = alistamientosResponse?.data || [];
+                const serviciosAlistamiento = servicios.filter(s => s.serviceType === 'ALISTAMIENTO');
+                
+                // Contar frecuencia de cada item de alistamiento
+                const contadorAlistamientos = {};
+                serviciosAlistamiento.forEach(servicio => {
+                    if (servicio.items && Array.isArray(servicio.items)) {
+                        servicio.items.forEach(item => {
+                            if (item.completed || item.realizada) { // Considerar items completados
+                                contadorAlistamientos[item.id] = (contadorAlistamientos[item.id] || 0) + 1;
+                            }
+                        });
+                    }
+                });
+
+                // Crear array de alistamientos con su frecuencia y descripción
+                const alistamientosConFrecuencia = alistamientos
+                    .map(alistamiento => ({
+                        id: alistamiento.id,
+                        servicio: alistamiento.description || `Alistamiento #${alistamiento.id}`,
+                        cantidad: contadorAlistamientos[alistamiento.id] || 0
+                    }))
+                    .filter(item => item.cantidad > 0) // Solo mostrar los que tienen uso
+                    .sort((a, b) => b.cantidad - a.cantidad) // Ordenar por más utilizados
+                    .slice(0, 5); // Tomar los top 5
+
+                // Si no hay datos suficientes, mostrar todos los alistamientos disponibles
+                if (alistamientosConFrecuencia.length === 0) {
+                    const alistamientosDefault = alistamientos
+                        .slice(0, 5)
+                        .map(alistamiento => ({
+                            id: alistamiento.id,
+                            servicio: alistamiento.description || `Alistamiento #${alistamiento.id}`,
+                            cantidad: 0
+                        }));
+                    setAlistamientosMasSolicitados(alistamientosDefault);
+                } else {
+                    setAlistamientosMasSolicitados(alistamientosConFrecuencia);
+                }
+            } catch (error) {
+                console.error('Error cargando datos del dashboard:', error);
+                // Mantener valores en 0 si hay error
+                setStats({
+                    totalPilotos: 0,
+                    totalServicios: 0
+                });
+                setServiciosRecientes([]);
+                setAlistamientosMasSolicitados([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
+    }, []);
+
+    // Funciones de navegación y modales
+    const handleNavigateToServicios = () => {
+        history.push('/servicios');
     };
 
-    const citasHoy = [
-        { id: 1, cliente: "Carlos Rodríguez", moto: "KTM 250 SX-F", servicio: "Mantenimiento general", hora: "09:00" },
-        { id: 2, cliente: "Ana Martínez", moto: "Honda CRF450R", servicio: "Cambio de aceite", hora: "10:30" },
-        { id: 3, cliente: "Luis García", moto: "Yamaha YZ125", servicio: "Reparación motor", hora: "14:00" },
-    ];
+    const handleNavigateToPilotos = () => {
+        history.push('/pilotos');
+    };
 
-    const motosEnTaller = [
-        { id: 1, moto: "Suzuki RM-Z450", cliente: "Pedro Silva", estado: "En diagnóstico", dias: 2 },
-        { id: 2, moto: "Kawasaki KX250", cliente: "María López", estado: "Esperando repuestos", dias: 5 },
-        { id: 3, moto: "Husqvarna TC 125", cliente: "Juan Pérez", estado: "Lista para entrega", dias: 1 },
-    ];
+    const handleOpenPilotoModal = () => {
+        if (pilotoModalRef.current) {
+            pilotoModalRef.current.newPiloto();
+        }
+    };
 
-    const serviciosPopulares = [
-        { servicio: "Mantenimiento general", cantidad: 15 },
-        { servicio: "Cambio de aceite", cantidad: 12 },
-        { servicio: "Ajuste de cadena", cantidad: 8 },
-        { servicio: "Cambio de filtros", cantidad: 6 },
-    ];
+    const handleOpenServicioModal = () => {
+        if (servicioModalRef.current) {
+            servicioModalRef.current.newServicio();
+        }
+    };
+
+    const handleOpenAlistamientoModal = () => {
+        if (alistamientoModalRef.current) {
+            alistamientoModalRef.current.newAlistamiento();
+        }
+    };
 
     return (
         <div className="main-dashboard">
@@ -44,98 +159,137 @@ const MainDashboard = () => {
                 
                 {/* Tarjetas de estadísticas */}
                 <div className="stats-grid">
-                    <div className="stat-card stat-card-blue">
+                    <div className="stat-card stat-card-blue" style={{ cursor: 'pointer' }} onClick={handleNavigateToPilotos}>
                         <div className="stat-content">
-                            <div className="stat-number">{stats.motosEnTaller}</div>
-                            <div className="stat-label">Motos en Taller</div>
+                            <div className="stat-number">
+                                {loading ? '...' : stats.totalPilotos}
+                            </div>
+                            <div className="stat-label">Total Pilotos</div>
                         </div>
-                        <i className="pi pi-cog stat-icon"></i>
+                        <i className="pi pi-users stat-icon"></i>
                     </div>
                     
-                    <div className="stat-card stat-card-green">
+                    <div className="stat-card stat-card-green" style={{ cursor: 'pointer' }} onClick={handleNavigateToServicios}>
                         <div className="stat-content">
-                            <div className="stat-number">{stats.citasHoy}</div>
-                            <div className="stat-label">Citas Hoy</div>
+                            <div className="stat-number">
+                                {loading ? '...' : stats.totalServicios}
+                            </div>
+                            <div className="stat-label">Total Servicios</div>
                         </div>
-                        <i className="pi pi-calendar stat-icon"></i>
-                    </div>
-                    
-                    <div className="stat-card stat-card-orange">
-                        <div className="stat-content">
-                            <div className="stat-number">{stats.serviciosCompletados}</div>
-                            <div className="stat-label">Servicios Completados</div>
-                        </div>
-                        <i className="pi pi-check-circle stat-icon"></i>
-                    </div>
-                    
-                    <div className="stat-card stat-card-purple">
-                        <div className="stat-content">
-                            <div className="stat-number">${stats.ventasHoy.toLocaleString()}</div>
-                            <div className="stat-label">Ingresos Hoy</div>
-                        </div>
-                        <i className="pi pi-dollar stat-icon"></i>
+                        <i className="pi pi-wrench stat-icon"></i>
                     </div>
                 </div>
 
                 {/* Grid de contenido principal */}
                 <div className="dashboard-content">
                     
-                    {/* Citas del día */}
-                    <Card title="📅 Citas de Hoy" className="dashboard-card">
-                        <div className="citas-list">
-                            {citasHoy.map(cita => (
-                                <div key={cita.id} className="cita-item">
-                                    <div className="cita-time">{cita.hora}</div>
-                                    <div className="cita-info">
-                                        <div className="cliente-name">{cita.cliente}</div>
-                                        <div className="moto-model">{cita.moto}</div>
-                                        <div className="servicio-type">{cita.servicio}</div>
-                                    </div>
-                                    <Button icon="pi pi-eye" className="p-button-text p-button-sm" />
+                    {/* Servicios Recientes */}
+                    <Card title="🔄 Servicios Recientes" className="dashboard-card">
+                        <div className="servicios-recientes-list">
+                            {loading ? (
+                                <div className="text-center p-4">
+                                    <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
+                                    <p>Cargando servicios...</p>
                                 </div>
-                            ))}
+                            ) : serviciosRecientes.length > 0 ? (
+                                serviciosRecientes.map(servicio => (
+                                    <div key={servicio.id} className="servicio-card mb-3">
+                                        {/* Header con tipo de servicio y estado */}
+                                        <div className="flex justify-content-between align-items-center mb-2">
+                                            <div className="flex align-items-center gap-2">
+                                                <i className={`pi ${servicio.tipo === 'Alistamiento' ? 'pi-list' : 'pi-wrench'} text-primary`}></i>
+                                                <span className="servicio-tipo font-semibold text-900">{servicio.tipo}</span>
+                                            </div>
+                                            <span className={`status-badge status-${servicio.estado.toLowerCase().replace(/\s+/g, '-')} px-2 py-1 border-round text-xs font-semibold`}>
+                                                {servicio.estado}
+                                            </span>
+                                        </div>
+                                        
+                                        {/* Información principal */}
+                                        <div className="grid">
+                                            <div className="col-12 md:col-8">
+                                                {/* Piloto */}
+                                                <div className="flex align-items-center gap-2 mb-2">
+                                                    <i className="pi pi-user text-600 text-sm"></i>
+                                                    <span className="piloto-name text-900">{servicio.piloto}</span>
+                                                </div>
+                                                
+                                                {/* Moto y horas */}
+                                                <div className="flex align-items-center gap-2 mb-2">
+                                                    <span style={{ fontSize: '14px' }}>🏍️</span>
+                                                    <span className="bike-info text-700 text-sm">{servicio.bikeType}</span>
+                                                    <span className="text-600 text-sm">•</span>
+                                                    <span className="hours-info text-700 text-sm font-medium">{servicio.hours}h</span>
+                                                </div>
+                                                
+                                                {/* Fecha */}
+                                                <div className="flex align-items-center gap-2">
+                                                    <i className="pi pi-calendar text-600 text-sm"></i>
+                                                    <span className="fecha text-600 text-sm">{servicio.fecha}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="col-12 md:col-4 flex justify-content-end align-items-center">
+                                                <Button 
+                                                    icon="pi pi-eye" 
+                                                    className="p-button-text p-button-rounded p-button-sm"
+                                                    // tooltip="Ver detalles"
+                                                    tooltipOptions={{ position: 'top' }}
+                                                    onClick={() => servicioModalRef.current?.viewServicio(servicio._raw)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center p-4">
+                                    <i className="pi pi-info-circle" style={{ fontSize: '2rem', color: '#6c757d' }}></i>
+                                    <p>No hay servicios registrados</p>
+                                </div>
+                            )}
                         </div>
-                        <Button label="Ver todas las citas" className="p-button-link mt-3" />
+                        <Button 
+                            label="Ver todos los servicios" 
+                            className="p-button-link mt-3" 
+                            onClick={handleNavigateToServicios}
+                        />
                     </Card>
 
-                    {/* Motos en el taller */}
-                    <Card title="🏍️ Motos en el Taller" className="dashboard-card">
-                        <div className="motos-list">
-                            {motosEnTaller.map(moto => (
-                                <div key={moto.id} className="moto-item">
-                                    <div className="moto-info">
-                                        <div className="moto-model">{moto.moto}</div>
-                                        <div className="cliente-name">{moto.cliente}</div>
-                                    </div>
-                                    <div className="moto-status">
-                                        <span className={`status-badge status-${moto.estado.toLowerCase().replace(/\s+/g, '-')}`}>
-                                            {moto.estado}
-                                        </span>
-                                        <div className="dias-taller">{moto.dias} día(s)</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <Button label="Ver estado de todas las motos" className="p-button-link mt-3" />
-                    </Card>
-
-                    {/* Servicios más solicitados */}
-                    <Card title="🔧 Servicios Más Solicitados" className="dashboard-card">
+                    {/* Alistamientos más solicitados */}
+                    <Card title="🔧 Alistamientos Más Solicitados" className="dashboard-card">
                         <div className="servicios-chart">
-                            {serviciosPopulares.map(item => (
-                                <div key={item.servicio} className="servicio-bar">
-                                    <div className="servicio-info">
-                                        <span className="servicio-name">{item.servicio}</span>
-                                        <span className="servicio-count">{item.cantidad}</span>
-                                    </div>
-                                    <div className="servicio-progress">
-                                        <div 
-                                            className="progress-fill" 
-                                            style={{ width: `${(item.cantidad / 15) * 100}%` }}
-                                        ></div>
-                                    </div>
+                            {loading ? (
+                                <div className="text-center p-4">
+                                    <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
+                                    <p>Cargando alistamientos...</p>
                                 </div>
-                            ))}
+                            ) : alistamientosMasSolicitados.length > 0 ? (
+                                alistamientosMasSolicitados.map(item => {
+                                    // Calcular el ancho de la barra basado en el máximo valor
+                                    const maxCantidad = Math.max(...alistamientosMasSolicitados.map(a => a.cantidad)) || 1;
+                                    const widthPercentage = (item.cantidad / maxCantidad) * 100;
+                                    
+                                    return (
+                                        <div key={item.id} className="servicio-bar">
+                                            <div className="servicio-info">
+                                                <span className="servicio-name">{item.servicio}</span>
+                                                <span className="servicio-count">{item.cantidad}</span>
+                                            </div>
+                                            <div className="servicio-progress">
+                                                <div 
+                                                    className="progress-fill" 
+                                                    style={{ width: `${widthPercentage}%` }}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="text-center p-4">
+                                    <i className="pi pi-info-circle" style={{ fontSize: '2rem', color: '#6c757d' }}></i>
+                                    <p>No hay datos de alistamientos utilizados</p>
+                                </div>
+                            )}
                         </div>
                     </Card>
 
@@ -143,30 +297,33 @@ const MainDashboard = () => {
                     <Card title="⚡ Acciones Rápidas" className="dashboard-card">
                         <div className="quick-actions">
                             <Button 
-                                icon="pi pi-plus" 
-                                label="Nueva Cita" 
+                                icon="pi pi-user-plus" 
+                                label="Crear Piloto" 
                                 className="p-button-success quick-action-btn"
+                                onClick={handleOpenPilotoModal}
                             />
                             <Button 
-                                icon="pi pi-car" 
-                                label="Ingresar Moto" 
+                                icon="pi pi-cog" 
+                                label="Crear Servicio" 
                                 className="p-button-info quick-action-btn"
+                                onClick={handleOpenServicioModal}
                             />
                             <Button 
-                                icon="pi pi-shopping-cart" 
-                                label="Vender Repuesto" 
+                                icon="pi pi-list" 
+                                label="Crear Alistamiento" 
                                 className="p-button-warning quick-action-btn"
-                            />
-                            <Button 
-                                icon="pi pi-file-pdf" 
-                                label="Generar Reporte" 
-                                className="p-button-secondary quick-action-btn"
+                                onClick={handleOpenAlistamientoModal}
                             />
                         </div>
                     </Card>
 
                 </div>
             </Card>
+            
+            {/* Modales */}
+            <VenPilotos ref={pilotoModalRef} />
+            <VenServicios ref={servicioModalRef} />
+            <VenAlistamiento ref={alistamientoModalRef} />
         </div>
     );
 };

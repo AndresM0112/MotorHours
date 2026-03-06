@@ -68,8 +68,6 @@
 
 // socket.js (backend La Mayorista)
 import { Server as SocketIOServer } from "socket.io";
-import { createAdapter } from "@socket.io/redis-adapter";
-import Redis from "ioredis";
 import { setIO } from "./src/common/configs/socket.manager.js"; // 👈 IMPORTANTE
 
 export function initSocket(server) {
@@ -90,18 +88,7 @@ export function initSocket(server) {
   // 🔴 REGISTRAR LA INSTANCIA GLOBALMENTE (MISMO PATRÓN QUE PONTO)
   setIO(io);
 
-  // Configuración Redis
-  const pubClient = new Redis({
-    host: process.env.REDIS_HOST || "localhost",
-    port: Number(process.env.REDIS_PORT) || 6379,
-    password: process.env.REDIS_PASSWORD || undefined,
-  });
-
-  const subClient = pubClient.duplicate();
-
-  io.adapter(createAdapter(pubClient, subClient));
-
-  // Namespace para La Mayorista
+  // Namespace para Motorhours
   const motorhoursNamespace = io.of("/socket/mth");
 
   motorhoursNamespace.adapter.on("join-room", (room, id) => {
@@ -109,7 +96,7 @@ export function initSocket(server) {
   });
 
   motorhoursNamespace.on("connection", (socket) => {
-    console.log("[La Mayorista] Cliente conectado:", socket.id);
+    console.log("[Motorhours] Cliente conectado:", socket.id);
 
     socket.on("joinRoom", (room) => {
       socket.join(room);
@@ -122,12 +109,12 @@ export function initSocket(server) {
     });
 
     socket.on("mensaje", (data) => {
-      console.log("[La Mayorista] Mensaje recibido:", data);
+      console.log("[Motorhours] Mensaje recibido:", data);
       motorhoursNamespace.emit("mensaje", data);
     });
 
     socket.on("disconnect", () => {
-      console.log("[La Mayorista] Cliente desconectado:", socket.id);
+      console.log("[Motorhours] Cliente desconectado:", socket.id);
     });
   });
 

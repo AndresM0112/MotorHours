@@ -56,12 +56,6 @@ const VenUsuario = forwardRef(
             listperfiles,
             ProfileMode = false,
             setUsuFoto,
-            isClientUrl,
-            isEmployeeUrl,
-            /** NUEVO: activa modo inline */
-            // inline = false,
-            /** opcional: callback al cerrar inline */
-            // onInlineClose,
         },
         ref
     ) => {
@@ -82,28 +76,15 @@ const VenUsuario = forwardRef(
         const [VentanasInicial, setVentanaInicial] = useState([]);
         const [ventanasDisponibles, setVentanasDisponibles] = useState([]);
         const [areas, setAreas] = useState([]);
-        // catálogo de aseguradoras (opciones)
         const [insurersOptions, setInsurersOptions] = useState([]);
+        const [unidadesCliente] = useState([]); // Simplificado para taller
         const [visible, setVisible] = useState(false);
         const [usuId, setUsuId] = useState(0);
-
-        const [unidadesCliente, setUnidadesCliente] = useState([]);
-
         const [originalData, setOriginalData] = useState({});
         const [loading, setLoading] = useState(false);
 
-        const [isClient, setIsClient] = useState(!isClientUrl);
-        const [isEmployee, setIsEmployee] = useState(!isEmployeeUrl);
-
-        const [lists, setLists] = useState({
-            projectsLists: [],
-            refundableTypeList: [],
-        });
-
-        const [localesOptions, setLocalesOptions] = useState([]); // Locales dependientes del bloque
-
         const defaultValues = {
-            perfil: isClient ? 3 : isEmployee ? 14 : null,
+            perfil: null,
             nombre: "",
             apellido: "",
             documento: "",
@@ -113,34 +94,16 @@ const VenUsuario = forwardRef(
             correo: "",
             clave: "",
             confclave: "",
-            acceso: isClient || isEmployee ? false : true,
+            acceso: true,
             cambioclave: 0,
             estid: 1,
             usuventanas: [],
             usuareas: [],
-            aseguradoras: [],
-            valorHora: null,
-            // tirIds: [],
-            // proIds: [10],
-            bloqueId: null,
-            localId: null,
         };
 
+        // Simplificado para taller - eliminar configuraciones complejas
         useEffect(() => {
-            const fetchLists = async () => {
-                try {
-                    // TODO: Simplificar para dominio del taller - APIs eliminadas 
-                    setLists((prev) => ({
-                        ...prev,
-                        projectsLists: [], // Simplificado para taller
-                        refundableTypeList: [], // Simplificado para taller  
-                    }));
-                } catch (error) {
-                    console.error("Error al cargar listas:", error);
-                }
-            };
-
-            if (visible) fetchLists();
+            // Solo configuración básica para el taller
         }, [visible]);
 
         const methods = useForm({ defaultValues, shouldUnregister: false });
@@ -151,8 +114,6 @@ const VenUsuario = forwardRef(
         // const perfil = watch("perfil");
         const perfil = watch("perfil");
         const acceso = watch("acceso");
-        const bloqueId = watch("bloqueId");
-        const localId = watch("localId");
 
         const permisOrigRef = useRef(false);
 
@@ -165,25 +126,7 @@ const VenUsuario = forwardRef(
 
 
 
-        // Si por alguna razón llegan como string, corrige una sola vez:
-        useEffect(() => {
-            if (typeof bloqueId === 'string') setValue('bloqueId', Number(bloqueId), { shouldDirty: false });
-        }, [bloqueId, setValue]);
-        useEffect(() => {
-            if (typeof localId === 'string') setValue('localId', Number(localId), { shouldDirty: false });
-        }, [localId, setValue]);
-
-
-        // TODO: Simplificado para taller - eliminar lógica de bloques/locales
-        // useEffect(() => {
-        //     if (!visible) return;
-        //     if (!bloqueId) {
-        //         setLocalesOptions([]);
-        //         setValue("localId", null);
-        //         return;
-        //     }
-        //     // getLocalesByBlockAndClientAPI eliminada
-        // }, [bloqueId, visible, setValue, methods, usuId, isClient]);
+        // Simplificado - eliminar validaciones de bloques/locales
 
         const resetFormState = () => {
             reset(defaultValues);
@@ -197,8 +140,6 @@ const VenUsuario = forwardRef(
 
         const newUser = () => {
             resetFormState();
-            setIsClient(!!isClientUrl);
-            setIsEmployee(!!isEmployeeUrl);
             setActiveTab(0);
             setVisible(true);
         };
@@ -214,25 +155,8 @@ const VenUsuario = forwardRef(
                     return;
                 }
 
-                // const isClientProfile = data.perfil === 3 || !!isClientUrl;
-                // const isEmployeeProfile = data.perfil === 14 || !!isEmployeeUrl;
-                // setIsClient(isClientProfile);
-                // setIsEmployee(isEmployeeProfile);
-
-                // const isClientProfile = Number(data.perfil) === 3;
-                // const isEmployeeProfile = Number(data.perfil) === 14;
-
-                // // En edición, que mande el perfil del registro, no la URL
-                // setIsClient(isClientProfile);
-                // setIsEmployee(isEmployeeProfile);
-
-                if (data.perfil === 3) setIsClient(true);
-                else if (data.perfil === 14) setIsEmployee(true);
-
-
                 const processedData = {
                     ...data,
-                    // perfil: Number(data.perfil),
                     acceso: data.acceso === 1,
                     agenda: data.agenda === 1,
                     instructor: data.instructor === 1,
@@ -240,100 +164,18 @@ const VenUsuario = forwardRef(
                     cambioclave: data.cambioclave === 1,
                     usuventanas: data.usuventanas ? data.usuventanas.split(",").map(Number) : [],
                     usuareas: data.usuareas ? data.usuareas.split(",").map(Number) : [],
-                    aseguradoras: data.aseguradoras ? data.aseguradoras.split(",").map(Number) : [],
-                    tirIds: data.tirIds ? data.tirIds.split(",").map(Number) : [],
-                    proIds: data.proIds ? data.proIds.split(",").map(Number) : [],
                 };
 
-                // Foto
+                // Foto del usuario
                 setUserImage(
                     data.usuFoto
                         ? { file: null, preview: data.usuFoto, firebaseUrl: data.usuFoto }
                         : { file: null, preview: null, firebaseUrl: null }
                 );
 
-                // Ids existentes
-                const existingBloqueId = asValidId(
-                    (Array.isArray(data.proIds) && data.proIds.length ? data.proIds[0] : null)
-                    ?? data.bloqueId ?? data.proyectoId ?? data.projectId
-                );
-
-                const existingLocalId = asValidId(data.localId ?? data.unidadId);
-
-
-                // 1) reset base (SIN bloque/local) para no colisionar con options aún vacías
-                reset({
-                    ...processedData,
-                    bloqueId: null,
-                    localId: null,
-                });
-                setOriginalData({
-                    ...processedData,
-                    bloqueId: existingBloqueId ?? null,
-                    localId: existingLocalId ?? null,
-                });
-
-
-
-                // 2) cargar proyectos (bloques)
-                let projects = [];
-                // TODO: Simplificado para taller de motos
-                // if (data.perfil === 3 && item.usuId) {
-                //     try {
-                //         const { data: blocksByClient } = await getBlocksByClientAPI(item.usuId);
-                //         projects = normalizeProjects(blocksByClient);
-                //     } catch { }
-                // }
-                // if (projects.length === 0) {
-                //     const projectsRes = await getAllBlocksAPI();
-                //     projects = normalizeProjects(projectsRes.data);
-                // }
-
-                projects = []; // Simplificado para taller
-
-                // TODO: Simplificado para taller - eliminar autodetección de bloques
-                let detectedBloqueId = null; // Simplificado para taller
-                let locals = [];
-
-                // if (!detectedBloqueId && existingLocalId) {
-                //     for (const p of projects) {
-                //         try {
-                //             const { data: locs } = await getLocalesByBlockAndClientAPI({
-                //                 bloId: p.id,
-                //                 clientId: data.perfil === 3 ? item.usuId : null,
-                //             });
-                //             const mapped = (locs || []).map(r => ({ id: Number(r.etaId ?? r.id), nombre: r.nombre }));
-                //             const hit = mapped.some(l => Number(l.id) === Number(existingLocalId));
-                //             console.log('[DETECT] revisando bloque', p.id, '→ contiene local?', hit);
-                //             if (hit) {
-                //                 detectedBloqueId = p.id;
-                //                 locals = mapped;
-                //                 break;
-                //             }
-                //         } catch (e) {
-                //             // silencioso
-                //         }
-                //     }
-                // }
-
-                setLists(prev => ({ ...prev, projectsLists: projects }));
-
-                // TODO: Simplificado para taller - sin lógica de locales
-                // if (!locals.length && detectedBloqueId) {
-                //     try {
-                //         const { data: locs } = await getLocalesByBlockAndClientAPI({
-                //             bloId: detectedBloqueId,
-                //             clientId: data.perfil === 3 ? item.usuId : null,
-                //         });
-                //         locals = (locs || []).map(r => ({ id: Number(r.etaId ?? r.id), nombre: r.nombre }));
-                //     } catch { }
-                // }
-                
-                setLocalesOptions([]);  // Simplificado para taller
-
-                // TODO: Simplificado - revisar si es necesario para taller
-                setValue("bloqueId", null, { shouldDirty: false, shouldValidate: true });
-                setValue("localId", null, { shouldDirty: false, shouldValidate: true });
+                // Resetear el formulario con los datos del usuario
+                reset(processedData);
+                setOriginalData(processedData);
 
                 setVisible(true);
             } catch (err) {
@@ -418,46 +260,10 @@ const VenUsuario = forwardRef(
             }
         };
 
+        // useEffect simplificado para taller - sin lógicas complejas de perfil
         useEffect(() => {
             if (!perfil) return;
             getVentanas(perfil);
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [perfil]);
-
-        // Manejo de perfil → client/employee + limpieza de aseguradoras si cambia
-        // useEffect(() => {
-        //     const perfil = watch("perfil");
-        //     if (perfil) {
-        //         if (perfil === 3) {
-        //             setIsClient(true);
-        //         } else if (perfil === 14) {
-        //             setIsEmployee(true);
-        //         } else {
-        //             setIsClient(false);
-        //             setIsEmployee(false);
-        //             setValue("aseguradoras", []);
-        //         }
-        //     }
-        //     // eslint-disable-next-line react-hooks/exhaustive-deps
-        // }, [watch("perfil")]);
-        useEffect(() => {
-            if (!perfil) return;
-
-            if (perfil === 3) {
-                setIsClient(true);
-                setIsEmployee(false);
-            } else if (perfil === 14) {
-                setIsEmployee(true);
-                setIsClient(false);
-            } else {
-                setIsClient(false);
-                setIsEmployee(false);
-                setValue("aseguradoras", []);
-            }
-
-            // si quieres mantener el fetch de ventanas en el mismo efecto:
-            getVentanas(perfil);
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [perfil]);
 
         const saveUser = async (datos) => {
@@ -475,49 +281,21 @@ const VenUsuario = forwardRef(
                 clave = "",
                 confclave = "",
                 acceso,
-                agenda,
-                instructor,
-                requiere_confirmacion,
                 cambioclave,
                 estid,
-                valorHora = null,
-                aseguradoras: aseguradorasForm = [],
             } = datos;
-
-            console.log(datos);
 
             const hasPasswordChange = typeof clave === "string" && clave.trim().length > 0;
 
             const usuventanas = acceso ? (datos.usuventanas || []).join(",") : null;
             const usuareas = acceso ? (datos.usuareas || []).join(",") : null;
 
-            // const tirIds = (datos.tirIds || []).map(Number);
-            // const proIds = (datos.proIds || []).map(Number);
-
-            const tirIds = (datos.tirIds || []).map(Number);
-            const bloqueId = datos.bloqueId ? Number(datos.bloqueId) : null;
-            const localId = datos.localId ? Number(datos.localId) : null;
-            const proIds = bloqueId ? [bloqueId] : []; // ⚙️ compatibilidad (si tu backend usa proIds)
-
-
             const accesoChange = acceso ? 1 : 0;
-            const agendaChange = agenda ? 1 : 0;
-            const instructorChange = instructor ? 1 : 0;
-            const requiereConfirmacionChange = requiere_confirmacion ? 1 : 0;
             const cambioclaveChange = cambioclave ? 1 : 0;
 
-            // Normaliza aseguradoras siempre como array numérico y sin duplicados
-            const selectedAseguradoras = Array.from(new Set((aseguradorasForm || []).map(Number)));
-
-            // Comparación sin cambios (tipos y orden ya normalizados)
-
-
-
+            // Verificación de cambios simplificada para taller
             const noChanges =
                 usuId > 0 &&
-                acceso &&
-                agenda &&
-                instructor &&
                 perfil === originalData.perfil &&
                 nombre === originalData.nombre &&
                 apellido === originalData.apellido &&
@@ -527,26 +305,17 @@ const VenUsuario = forwardRef(
                 telefono === originalData.telefono &&
                 direccion === originalData.direccion &&
                 accesoChange === (originalData.acceso ? 1 : 0) &&
-                agendaChange === (originalData.agenda ? 1 : 0) &&
-                instructorChange === (originalData.instructor ? 1 : 0) &&
-                requiereConfirmacionChange === (originalData.requiere_confirmacion ? 1 : 0) &&
                 cambioclaveChange === (originalData.cambioclave ? 1 : 0) &&
                 estid === originalData.estid &&
-                valorHora === originalData.valorHora &&
                 arraysEqual(asNumSorted(originalData.usuventanas || []), asNumSorted(datos?.usuventanas || [])) &&
-                arraysEqual(asNumSorted(originalData.aseguradoras || []), asNumSorted(selectedAseguradoras || [])) &&
-                arraysEqual(asNumSorted(originalData.tirIds || []), asNumSorted(datos?.tirIds || [])) &&
-                arraysEqual(asNumSorted(originalData.proIds || []), asNumSorted(datos?.proIds || [])) &&
                 arraysEqual(asNumSorted(originalPermiss || []), asNumSorted(permisosSeleccionados || []))
                 && !hasPasswordChange;
-
 
             if (noChanges) {
                 setLoading(false);
                 return showInfo("No has realizado ninguna modificación");
             }
 
-            const formData = new FormData();
             let uploadedImageUrl = null;
 
             // Subida de imagen SOLO si hay archivo nuevo
@@ -569,21 +338,8 @@ const VenUsuario = forwardRef(
                 });
             }
 
-            const seleccionUnidades = (datos.unidadesCliente || [])
-                .map((id) => {
-                    const unidad = unidadesCliente.find((u) => u.id === id);
-                    return unidad ? { uniId: unidad.id, etaId: unidad.etapaId } : null;
-                })
-                .filter(Boolean);
-
-            const aseguradorasToSend = perfil === 14 ? selectedAseguradoras : [];
-
+            // Payload simplificado para taller de motos
             const payload = {
-                unidadesCliente: seleccionUnidades || [],
-                tirIds: tirIds || [],
-                proIds: proIds || [],
-                bloqueId: bloqueId ?? "",
-                localId: localId ?? "",
                 usuFoto: uploadedImageUrl || userImage?.firebaseUrl || "",
                 perfil,
                 nombre,
@@ -596,26 +352,23 @@ const VenUsuario = forwardRef(
                 clave,
                 confclave,
                 acceso: Boolean(accesoChange),
-                agenda: Boolean(agendaChange),
-                instructor: Boolean(instructorChange),
-                requiere_confirmacion: Boolean(requiereConfirmacionChange),
                 cambioclave: Boolean(cambioclaveChange),
                 estid: String(estid),
-                valorHora: valorHora ?? "",
                 usuventanas: usuventanas ?? "",
                 usuareas: usuareas ?? "",
                 usuId: String(usuId),
                 idusuario: String(idusuario),
                 usuarioact: nombreusuario,
-                aseguradoras: perfil === 14 ? selectedAseguradoras : [],
             };
-
 
             try {
                 const { data } = await saveUserAPI(payload);
                 showSuccess(data.message);
 
-                if (usuId === 0 && uploadedImageUrl && data.usuId) {
+                const finalUsuId = usuId > 0 ? usuId : data.usuId;
+
+                // Subir imagen si existe un archivo
+                if (userImage?.file) {
                     const folderPath = `usuarios/${data.usuId}`;
                     await new Promise((resolve, reject) => {
                         uploadFile(
@@ -634,8 +387,7 @@ const VenUsuario = forwardRef(
                     });
                 }
 
-                const finalUsuId = usuId > 0 ? usuId : data.usuId;
-
+                // Actualizar permisos si han cambiado
                 if (permisosSeleccionados.length > 0) {
                     await updateUserPermissionsAPI({
                         permissions: permisosSeleccionados.map((p) => p.perId),
@@ -654,18 +406,11 @@ const VenUsuario = forwardRef(
                     correo: correo === "null" ? null : correo,
                     telefono: telefono === "null" ? null : telefono,
                     direccion: direccion === "null" ? null : direccion,
-                    clave,
-                    confclave,
                     acceso: accesoChange,
-                    agenda: agendaChange,
-                    instructor: instructorChange,
-                    requiere_confirmacion: requiereConfirmacionChange,
                     cambioclave: cambioclaveChange,
                     estid,
-                    valorHora,
                     usuventanas,
                     usuareas,
-                    aseguradoras: aseguradorasToSend, // mantener array en tu store/grilla
                     nomestado: estid === 1 ? "Activo" : "Inactivo",
                     nomperfil: listperfiles?.find((per) => per.id === perfil)?.nombre,
                     usuact: nombreusuario,
@@ -758,35 +503,34 @@ const VenUsuario = forwardRef(
             }
         });
 
+        // Debug simplificado para taller
         console.log("prueba campos", {
-
             usuId, perfil, acceso,
-            isClient, isEmployee,
-            isThirdParty: !isClient && !isEmployee,
             ventanas: ventanasDisponibles?.length
         });
 
         const fieldsForm = useMemo(() => {
-            const common = [];
+            const commonFields = [];
 
+            // Perfil del usuario
             if (!ProfileMode) {
-                common.push({
-                    key: "example-8",
+                commonFields.push({
+                    key: "perfil",
                     type: "dropdown",
                     name: "perfil",
-                    label: "Seleccionar Perfil",
+                    label: "Perfil de Usuario",
                     options: listperfiles,
                     optionLabel: "nombre",
                     optionValue: "id",
-                    validation: { required: "el campo perfil es requerido." },
+                    validation: { required: "El campo perfil es requerido." },
                     required: true,
-                    disabled: (isClient || isEmployee) && usuId > 0 && !canAssignPermission,
                     className: "col-12",
                 });
             }
 
-            common.push({
-                key: "Documento",
+            // Documento
+            commonFields.push({
+                key: "documento",
                 type: "text",
                 name: "documento",
                 label: "NIT / CC",
@@ -797,36 +541,35 @@ const VenUsuario = forwardRef(
                 required: true,
             });
 
+            // Nombre y apellido para usuarios no en modo perfil
             if (!ProfileMode) {
-                common.push(
+                commonFields.push(
                     {
-                        key: "Nombre",
+                        key: "nombre",
                         type: "text",
                         name: "nombre",
                         label: "Nombre(s)",
-                        validation: { required: "el campo nombre es requerido." },
+                        validation: { required: "El campo nombre es requerido." },
                         required: true,
                         maxLength: 255,
                         className: "col-12",
                     },
-
-
                     {
-                        key: "Apellido",
+                        key: "apellido",
                         type: "text",
                         name: "apellido",
                         label: "Apellido(s)",
-                        validation: { required: "el campo apellido es requerido." },
+                        validation: { required: "El campo apellido es requerido." },
                         required: true,
                         maxLength: 255,
                         className: "col-12",
-
                     }
                 );
             }
 
-            common.push({
-                key: "Correo",
+            // Correo electrónico
+            commonFields.push({
+                key: "correo",
                 type: "text",
                 name: "correo",
                 label: "Correo Electrónico",
@@ -841,20 +584,10 @@ const VenUsuario = forwardRef(
                 maxLength: 255,
                 className: "col-12",
             });
-            // common.push({
-            //     key: "Correo",
-            //     type: "text",
-            //     name: "correo",
-            //     label: "Correo Electrónico",
-            //     // Si quieres validar:
-            //     // validation: { required: "El campo correo es requerido.", validate: isEmail() },
-            //     maxLength: 255,
-            //     className: "col-12",
-            // });
 
-
-            common.push({
-                key: "Telefono",
+            // Teléfono
+            commonFields.push({
+                key: "telefono",
                 type: "text",
                 name: "telefono",
                 label: "Celular / Teléfono",
@@ -866,13 +599,12 @@ const VenUsuario = forwardRef(
                     },
                 keyfilter: "int",
                 maxLength: 11,
-                disabled: false,
                 className: "col-12",
             });
 
-
-            common.push({
-                key: "Direccion",
+            // Dirección
+            commonFields.push({
+                key: "direccion",
                 type: "text",
                 name: "direccion",
                 label: "Dirección",
@@ -882,132 +614,9 @@ const VenUsuario = forwardRef(
                         onBlur: (e) => updateData({ campo: "direccion", newValue: e.target.value }),
                         autoComplete: "off",
                     },
-                // keyfilter: "int",
                 maxLength: 255,
                 className: "col-12",
             });
-
-
-
-            if (perfil !== 3) {
-                common.push({
-                    key: "example-3",
-                    type: "multiselect",
-                    name: "usuareas",
-                    label: "Seleccionar Áreas",
-                    options: areas,
-                    className: "col-12",
-                });
-            }
-
-            // watch("perfil") === 14 && {
-            //     key: "example-3",
-            //     type: "multiselect",
-            //     name: "aseguradoras",
-            //     label: "Seleccionar Aseguradoras",
-            //     options: insurersOptions,
-            //     optionLabel: "nombre",
-            //     optionValue: "id",
-            //     className: "col-12",
-            // },
-
-            if (isClient) {
-                common.push(
-                    {
-                        key: "client-bloque",
-                        type: "dropdown",
-                        name: "bloqueId",
-                        label: "Bloque",
-                        options: lists.projectsLists, // [{id,nombre}]
-                        optionLabel: "nombre",
-                        optionValue: "id",
-                        // validation: { required: "Selecciona un bloque." },
-                        // required: true,
-                        className: "col-12",
-                        props: {
-                            filter: true,
-                            showClear: true,
-                            onChange: (e) => {
-                                // PrimeReact entrega e.value = id (por optionValue)
-                                setValue("bloqueId", Number(e.value), { shouldDirty: true, shouldValidate: true });
-                                // setValue("localId", null, { shouldDirty: true, shouldValidate: true });
-                            },
-                        },
-                    },
-
-                    {
-                        key: "client-local",
-                        type: "dropdown",
-                        name: "localId",
-                        label: "Local",
-                        options: localesOptions, // cargados por efecto al cambiar bloque
-                        optionLabel: "nombre",
-                        optionValue: "id",
-                        // validation: { required: "Selecciona un local." },
-                        // required: true,
-                        className: "col-12",
-                        disabled: !bloqueId,
-                        props: {
-                            filter: true,
-                            showClear: true,
-                            onChange: (e) => {
-                                setValue("localId", Number(e.value), { shouldDirty: true, shouldValidate: true });
-                                methods.clearErrors("localId");
-                            },
-                        },
-                    }
-                );
-            }
-
-            // isClient && {
-            //     key: "client-local",
-            //     type: "dropdown",
-            //     name: "localId",
-            //     label: "Local",
-            //     options: localesOptions, // cargados por efecto al cambiar bloque
-            //     optionLabel: "nombre",
-            //     optionValue: "id",
-            //     // validation: { required: "Selecciona un local." },
-            //     // required: true,
-            //     className: "col-12",
-            //     disabled: !bloqueId,
-            //     props: {
-            //         filter: true,
-            //         showClear: true,
-            //         onChange: (e) => {
-            //             setValue("localId", Number(e.value), { shouldDirty: true, shouldValidate: true });
-            //             methods.clearErrors("localId");
-            //         },
-            //     },
-            // },
-
-            // watch("perfil") === 14 && {
-            //     key: "example-32",
-            //     type: "multiselect",
-            //     name: "tirIds",
-            //     label: "Seleccionar Tipo de reembolsos",
-            //     options: lists.refundableTypeList,
-            //     optionLabel: "nombre",
-            //     optionValue: "id",
-            //     className: "col-12",
-            // },
-
-            // isClient && {
-            //     key: "unidadesCliente",
-            //     type: "multiselectGroup",
-            //     name: "unidadesCliente",
-            //     label: "Unidades Asignadas o Disponibles",
-            //     options: unidadesAgrupadas,
-            //     optionGroupLabel: "nombre",
-            //     optionGroupChildren: "items",
-            //     optionLabel: "nombre",
-            //     optionValue: "id",
-            //     props: {
-            //         display: "chip",
-            //         filter: true,
-            //         filterBy: "nombre,proyectoNombre,etapaNombre",
-            //         optionGroupTemplate: (group) => (
-            //             <div className="text-primary font-bold">
             //                 <i className="pi pi-building mr-2" />
             //                 {group.nombre}
             //             </div>
@@ -1022,10 +631,12 @@ const VenUsuario = forwardRef(
             // },
 
             // Acceso / Estado / Ventanas / Usuario / Clave (solo cuando NO es cliente NI empleado)
+            const isClient = false; // Simplificado para taller
+            const isEmployee = false; // Simplificado para taller
             const isThirdParty = !isClient && !isEmployee;
 
             if (isThirdParty && usuId > 0 && !ProfileMode) {
-                common.push({
+                commonFields.push({
                     key: "example-1",
                     type: "inputSwitch",
                     name: "acceso",
@@ -1035,7 +646,7 @@ const VenUsuario = forwardRef(
                 });
 
                 if (acceso) {
-                    common.push({
+                    commonFields.push({
                         key: "example-1",
                         type: "inputSwitch",
                         name: "cambioclave",
@@ -1043,7 +654,7 @@ const VenUsuario = forwardRef(
                         className: "col-12",
                     });
                 }
-                common.push({
+                commonFields.push({
                     key: "inmo-4",
                     type: "selectButton",
                     name: "estid",
@@ -1055,7 +666,7 @@ const VenUsuario = forwardRef(
 
 
                 if (acceso && (ventanasDisponibles?.length || 0) > 0) {
-                    common.push({
+                    commonFields.push({
                         key: "example-3",
                         type: "multiselect",
                         name: "usuventanas",
@@ -1069,7 +680,7 @@ const VenUsuario = forwardRef(
 
 
                 if (acceso) {
-                    common.push({
+                    commonFields.push({
                         key: "example-1",
                         type: "text",
                         name: "usuario",
@@ -1082,7 +693,7 @@ const VenUsuario = forwardRef(
                     });
                 }
                 if (acceso) {
-                    common.push({
+                    commonFields.push({
                         key: "example-1",
                         type: "password",
                         name: "clave",
@@ -1100,7 +711,7 @@ const VenUsuario = forwardRef(
             }
 
             if (!isClient && !isEmployee && usuId === 0 && !ProfileMode) {
-                common.push(
+                commonFields.push(
                     {
                         key: "acceso",
                         type: "inputSwitch",
@@ -1138,41 +749,112 @@ const VenUsuario = forwardRef(
                                 maxLength: 255,
                                 disabled: false,
                                 className: "col-12",
-                            },
-                            {
-                                key: "clave",
-                                type: "password",
-                                name: "clave",
-                                label: "Contraseña",
-                                props: { autoComplete: "new-password", toggleMask: true },
-                                validation: {
-                                    required: "El campo contraseña es requerido.",
-                                    validate: isStrongPassword,
-                                },
-                                required: true,
-                                maxLength: 255,
-                                className: "col-12",
-                            },
+                            }
                         ]
                         : [])
                 );
             }
 
-            return common;
+            // Usuario y contraseña para nuevos usuarios o modo no perfil
+            if (!ProfileMode) {
+                commonFields.push({
+                    key: "usuario",
+                    type: "text",
+                    name: "usuario",
+                    label: "Usuario de Acceso",
+                    validation: { required: "El campo usuario es requerido." },
+                    required: true,
+                    maxLength: 255,
+                    className: "col-12",
+                });
+
+                // Solo mostrar campos de contraseña para usuarios nuevos
+                if (usuId === 0) {
+                    commonFields.push(
+                        {
+                            key: "clave",
+                            type: "password",
+                            name: "clave",
+                            label: "Contraseña",
+                            props: { autoComplete: "new-password", toggleMask: true },
+                            validation: {
+                                required: "El campo contraseña es requerido.",
+                                validate: isStrongPassword,
+                            },
+                            required: true,
+                            maxLength: 255,
+                            className: "col-12",
+                        },
+                        {
+                            key: "confclave",
+                            type: "password",
+                            name: "confclave",
+                            label: "Confirmar Contraseña",
+                            props: { autoComplete: "new-password", toggleMask: true },
+                            validation: {
+                                required: "El campo confirmar contraseña es requerido.",
+                                validate: (value) => {
+                                    const password = methods.watch("clave");
+                                    return value === password || "Las contraseñas no coinciden";
+                                },
+                            },
+                            required: true,
+                            maxLength: 255,
+                            className: "col-12",
+                        }
+                    );
+                }
+            }
+
+            // Acceso al sistema
+            commonFields.push({
+                key: "acceso",
+                type: "confirmation",
+                name: "acceso",
+                label: "Acceso al Sistema",
+                labelRadio: "¿Puede acceder al sistema?",
+                className: "col-12",
+            });
+
+            // Ventanas y permisos si tiene acceso
+            if (acceso && ventanasDisponibles.length > 0) {
+                commonFields.push({
+                    key: "usuventanas",
+                    type: "multiselect",
+                    name: "usuventanas",
+                    label: "Ventanas Permitidas",
+                    options: ventanasDisponibles,
+                    optionLabel: "nombre",
+                    optionValue: "id",
+                    className: "col-12",
+                });
+            }
+
+            // Estado del usuario
+            commonFields.push({
+                key: "estid",
+                type: "dropdown",
+                name: "estid",
+                label: "Estado del Usuario",
+                options: estados,
+                optionLabel: "nombre",
+                optionValue: "id",
+                validation: { required: "El campo estado es requerido." },
+                required: true,
+                className: "col-12",
+            });
+
+            return commonFields;
         }, [
             ProfileMode,
             listperfiles,
             usuId,
-            isClient,
-            isEmployee,
-            localesOptions,
             perfil,
             acceso,
             estados,
             areas,
-            insurersOptions,
             ventanasDisponibles,
-            unidadesAgrupadas,
+            methods,
         ]);
 
 

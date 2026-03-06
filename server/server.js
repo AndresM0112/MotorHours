@@ -9,7 +9,7 @@ const server = http.createServer(app);
 
 const PORT = process.env.PORT || 5042;
 
-// Inicializar sockets con Redis
+// Inicializar sockets (sin Redis)
 initSocket(server);
 
 server.listen(PORT, () => {

@@ -111,7 +111,7 @@ const Alistamientos = () => {
     []
   );
 
-  const sortField = "description";
+  const sortField = "id";
 
   const {
     reloadData,
@@ -123,6 +123,7 @@ const Alistamientos = () => {
     setPagination,
     onCustomPage,
   } = usePaginationData(initialFilters, paginateAlistamientosAPI, setLoading, sortField, () => true);
+
 
   // Skeleton inicial
   useEffect(() => {
@@ -297,44 +298,52 @@ const Alistamientos = () => {
     const estActivo = Number(item.active) === 1;
     const estadoLabel = estActivo ? "Activo" : "Inactivo";
     const estadoColor = estActivo ? colorMap.activo : colorMap.inactivo;
+    const estadoBg = estActivo ? "#fff7ed" : "#fff1f2";
+    const estadoBorder = estActivo ? "#fed7aa" : "#fecdd3";
+    const estadoText = estActivo ? "#c2410c" : "#be123c";
 
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <span style={{ fontWeight: 600, fontSize: 14, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
-          {description}
-        </span>
-        <Chip
-          label={estadoLabel}
-          className="text-white"
-          style={{ backgroundColor: estadoColor, flexShrink: 0 }}
-        />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, width: "100%" }}>
+        {/* Ícono + descripción */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: 1 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+            background: "#f0fdf4", border: "1px solid #bbf7d0",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 16
+          }}>
+            🔧
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: 13, color: "#111827", lineHeight: 1.3 }}>
+              {description}
+            </div>
+            <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>#{item.id}</div>
+          </div>
+        </div>
+        {/* Badge estado */}
+        <div style={{
+          flexShrink: 0, padding: "3px 10px", borderRadius: 20,
+          backgroundColor: estadoBg, border: `1px solid ${estadoBorder}`,
+          color: estadoText, fontSize: 10, fontWeight: 700
+        }}>
+          {estadoLabel}
+        </div>
       </div>
     );
   };
 
   const bodyCardTemplate = (item) => (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        fontSize: 12,
-        color: "#374151",
-      }}
-    >
-      <div>
-        <strong>Descripción:</strong> {item.description || "—"}
-      </div>
-      <div>
-        <strong>Fecha registro:</strong>{" "}
-        {item.createdAt ? String(item.createdAt) : "—"}
+    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+      {/* Separador */}
+      <div style={{ height: 1, background: "#f3f4f6", margin: "6px 0 10px" }} />
+
+      {/* Fecha */}
+      <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+        <i className="pi pi-calendar" style={{ fontSize: 11, color: "#9ca3af" }}></i>
+        <span style={{ fontSize: 12, color: "#6b7280" }}>
+          {item.createdAt ? String(item.createdAt) : "—"}
+        </span>
       </div>
     </div>
   );

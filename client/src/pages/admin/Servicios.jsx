@@ -295,60 +295,85 @@ const Servicios = () => {
   // Card header para mobile
   const headerCardTemplate = (item) => {
     const piloto = item?.pilotName || "Sin piloto";
-    const moto = item?.bikeType || "Moto";
     const tipo = item?.serviceType || "—";
+    const isAlistamiento = tipo === "ALISTAMIENTO";
+    const initials = piloto.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
 
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 12,
-          flexWrap: "wrap",
-        }}
-      >
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ fontWeight: 600, fontSize: 14 }}>{piloto}</span>
-          <div style={{ fontSize: 12, color: "#6b7280" }}>{moto} - {tipo}</div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, width: "100%" }}>
+        {/* Avatar + nombre */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: 1 }}>
+          <div style={{
+            width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
+            background: isAlistamiento ? "#fff7ed" : "#fefce8",
+            border: `2px solid ${isAlistamiento ? "#F97316" : "#eab308"}`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontWeight: 700, fontSize: 13, color: isAlistamiento ? "#F97316" : "#a16207"
+          }}>
+            {initials || "?"}
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {piloto}
+            </div>
+            <div style={{ fontSize: 11, color: "#6b7280" }}>Servicio #{item.id}</div>
+          </div>
+        </div>
+        {/* Chip tipo */}
+        <div style={{
+          flexShrink: 0, padding: "3px 10px", borderRadius: 20,
+          backgroundColor: isAlistamiento ? "#F97316" : "#eab308",
+          color: "#fff", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px"
+        }}>
+          {tipo}
         </div>
       </div>
     );
   };
 
-  const bodyCardTemplate = (item) => (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        fontSize: 12,
-        color: "#374151",
-      }}
-    >
-      <div>
-        <strong>Moto:</strong> {item.bikeType || "—"}
+  const bodyCardTemplate = (item) => {
+    const itemsCount = item?.items?.length || 0;
+    const isAlistamiento = item?.serviceType === "ALISTAMIENTO";
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+        {/* Separador */}
+        <div style={{ height: 1, background: "#f3f4f6", margin: "6px 0 10px" }} />
+
+        {/* Fila: moto + horas */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 15 }}>🏍️</span>
+            <span style={{ fontSize: 13, color: "#374151", fontWeight: 500 }}>{item.bikeType || "—"}</span>
+          </div>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 4,
+            background: "#f0fdf4", border: "1px solid #bbf7d0",
+            borderRadius: 8, padding: "2px 8px"
+          }}>
+            <i className="pi pi-clock" style={{ fontSize: 11, color: "#16a34a" }}></i>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#16a34a" }}>{item.hours} hrs</span>
+          </div>
+        </div>
+
+        {/* Fila: fecha + items si es alistamiento */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <i className="pi pi-calendar" style={{ fontSize: 11, color: "#9ca3af" }}></i>
+            <span style={{ fontSize: 12, color: "#6b7280" }}>
+              {item.createdAt ? String(item.createdAt) : "—"}
+            </span>
+          </div>
+          {isAlistamiento && itemsCount > 0 && (
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <i className="pi pi-list" style={{ fontSize: 11, color: "#6366f1" }}></i>
+              <span style={{ fontSize: 11, color: "#6366f1", fontWeight: 600 }}>{itemsCount} items</span>
+            </div>
+          )}
+        </div>
       </div>
-      <div>
-        <strong>Horas:</strong> {item.hours || "—"} hrs
-      </div>
-      <div>
-        <strong>Tipo:</strong>{" "}
-        <Chip
-          label={item.serviceType}
-          style={{
-            backgroundColor: item.serviceType === "ALISTAMIENTO" ? "#F97316" : "#ffc107",
-            color: "#fff",
-            fontSize: 11,
-            padding: "2px 6px",
-          }}
-        />
-      </div>
-      <div>
-        <strong>Fecha:</strong> {item.createdAt ? String(item.createdAt) : "—"}
-      </div>
-    </div>
-  );
+    );
+  };
 
   return firstLoad ? (
     <SkeletonMasterLoader />
