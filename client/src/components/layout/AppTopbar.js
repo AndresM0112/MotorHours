@@ -11,7 +11,7 @@ import useHandleApiError from "@hook/useHandleApiError";
 import Notifications from "@components/ui/Notifications";
 import { useMediaQueryContext } from "@context/mediaQuery/mediaQueryContext";
 import usePermissions from "@context/permissions/usePermissions";
-import VenTickets from "@pages/home/components/modals/VenTickets";
+
 import socket from "socket/socket";
 
 export const AppTopbar = (props) => {
@@ -22,9 +22,9 @@ export const AppTopbar = (props) => {
     const [visibleNotifications, setVisibleNotifications] = useState(false);
 
     const { hasPermission } = usePermissions();
-    const canCreate = hasPermission("home", "tickets", "create");
-
-    const venTicketsRef = useRef();
+    // TODO: Sistema de tickets eliminado para taller de motos
+    // const canCreate = hasPermission("home", "tickets", "create");
+    // const venTicketsRef = useRef();
 
     const { idusuario } = useContext(AuthContext);
     const { isMobile } = useMediaQueryContext();
@@ -123,11 +123,12 @@ export const AppTopbar = (props) => {
         return () => document.removeEventListener("keydown", onKey);
     }, []);
 
-    const handleNuevaTarea = () => {
-        if (venTicketsRef.current?.newTicket) {
-            venTicketsRef.current.newTicket();
-        }
-    };
+    // TODO: Sistema de tickets eliminado para taller de motos
+    // const handleNuevaTarea = () => {
+    //     if (venTicketsRef.current?.newTicket) {
+    //         venTicketsRef.current.newTicket();
+    //     }
+    // };
 
     return (
         <>
@@ -187,6 +188,7 @@ export const AppTopbar = (props) => {
                         "layout-topbar-menu-mobile-active": props.mobileTopbarMenuActive,
                     })}
                 >
+                    {/* TODO: Botón "Nueva Tarea" eliminado para taller de motos
                     <li>
                         {!isMobile && canCreate && (
                             <button
@@ -199,6 +201,7 @@ export const AppTopbar = (props) => {
                             </button>
                         )}
                     </li>
+                    */}
                     <li>
                         <div className="notification-wrapper">
                             {/* <button
@@ -248,6 +251,7 @@ export const AppTopbar = (props) => {
                 )}
             </div>
 
+            {/* TODO: Botón flotante "Nueva Tarea" eliminado para taller de motos
             {isMobile && canCreate && (
                 <button
                     className="floating-new-task-btn"
@@ -257,14 +261,16 @@ export const AppTopbar = (props) => {
                     <i className="pi pi-plus" />
                 </button>
             )}
+            */}
 
-            {/* <VenTickets ref={venTicketsRef} onRefresh={() => props.onRefresh} /> */}
+            {/* TODO: Sistema de tickets eliminado para taller de motos
             <VenTickets
                 ref={venTicketsRef}
                 addItem={() => {}}
                 updateItem={() => {}}
                 onRefresh={props.onRefresh}
             />
+            */}
         </>
     );
 };

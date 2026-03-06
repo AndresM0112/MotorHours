@@ -37,9 +37,9 @@ export const msnDatosObligatorios = "Hay información obligatoria por ingresar. 
 
 export const appointmentsStatusColors = {
     1: { background: " #fde68a", color: "#7c4700", label: "POR CONFIRMAR" }, // Amarillo pastel
-    2: { background: " #bbf7d0", color: "#065f46", label: "REPROGRAMADA" }, // Verde pastel
+    2: { background: " #fed7aa", color: "#9a3412", label: "REPROGRAMADA" }, // Naranja pastel
     3: { background: " #fecaca", color: "#3730a3", label: "CANCELADA" }, // Azul pastel
-    4: { background: " #bbf7d0", color: "#991b1b", label: "CONFIRMADA" }, // Rojo pastel
+    4: { background: " #fed7aa", color: "#991b1b", label: "CONFIRMADA" }, // Naranja pastel
     5: { background: " #e5e7eb", color: "#374151", label: "ASISTIÓ" }, // Gris pastel
     6: { background: " #fef9c3", color: "#a16207", label: "NO ASISTIÓ" }, // Amarillo claro pastel
     7: { background: " #fdf6b2", color: "#a16207", label: "POR REPROGRAMAR" }, // Amarillo muy claro pastel

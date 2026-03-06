@@ -1,11 +1,10 @@
-// src/pages/management/location/components/VenLocation.jsx
-
 import React, {
     forwardRef,
     useImperativeHandle,
     useState,
     useContext,
     useMemo,
+    useEffect,
 } from "react";
 
 import { Dialog } from "primereact/dialog";
@@ -20,25 +19,23 @@ import useHandleApiError from "@hook/useHandleApiError";
 import { useMediaQueryContext } from "@context/mediaQuery/mediaQueryContext";
 
 // API
-import { saveLocationAPI } from "@api/requests/locationApi";
+import { saveMotoAPI } from "@api/requests/motosAPI";
+import { getPilotosDropdownAPI } from "@api/requests/pilotosAPI";
 
-// ⬇️ nuevo import del config
-// import { locationForm } from "../configForms"; // ajusta la ruta si hace falta
-import { locationForm } from "@pages/home/configForms";
-
+// Config del formulario
+import { motosForm } from "@pages/home/configForms";
 
 const defaultValues = {
-    nombre: "",
-    estId: 1,
-    aplicaBloque: false,
-    aplicaLocal: false,
+    pilotId: null,
+    type: "",
 };
 
-const VenLocation = forwardRef(({ addItem, updateItem }, ref) => {
+const VenMotos = forwardRef(({ addItem, updateItem }, ref) => {
     const [visible, setVisible] = useState(false);
     const [mode, setMode] = useState("new"); // "new" | "view" | "edit"
-    const [lcaId, setLcaId] = useState(null);
+    const [motoId, setMotoId] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [pilotos, setPilotos] = useState([]);
 
     const { idusuario } = useContext(AuthContext);
     const { showSuccess } = useContext(ToastContext);
@@ -47,42 +44,55 @@ const VenLocation = forwardRef(({ addItem, updateItem }, ref) => {
     const isDesktop = !isMobile && !isTablet;
 
     const methods = useForm({ defaultValues });
-    const { reset, handleSubmit, getValues } = methods;
+    const { reset, handleSubmit, getValues, watch } = methods;
 
     const readOnly = mode === "view";
 
-    // ⬇️ campos vienen del config
+    // Cargar pilotos para el dropdown
+    useEffect(() => {
+        const loadPilotos = async () => {
+            try {
+                const { data } = await getPilotosDropdownAPI();
+                setPilotos(Array.isArray(data) ? data : []);
+            } catch (err) {
+                console.error('Error al cargar pilotos:', err);
+                setPilotos([]);
+            }
+        };
+
+        if (visible) {
+            loadPilotos();
+        }
+    }, [visible]);
+
+    // Configuración de campos del formulario
     const fields = useMemo(
-        () => locationForm({ readOnly }),
-        [readOnly]
+        () => motosForm({ readOnly, pilotos }),
+        [readOnly, pilotos]
     );
 
     useImperativeHandle(ref, () => ({
-        newLocation: () => {
+        newMoto: () => {
             setMode("new");
-            setLcaId(null);
+            setMotoId(null);
             reset(defaultValues);
             setVisible(true);
         },
-        editLocation: (row) => {
+        editMoto: (row) => {
             setMode("edit");
-            setLcaId(row?.lcaId);
+            setMotoId(row?.id);
             reset({
-                nombre: row?.nombre ?? "",
-                estId: row?.estId ?? 1,
-                aplicaBloque: !!row?.bloqueId, // 1 → true, 0 → false
-                aplicaLocal: !!row?.localId,
+                pilotId: row?.pilotId ?? null,
+                type: row?.type ?? "",
             });
             setVisible(true);
         },
-        viewLocation: (row) => {
+        viewMoto: (row) => {
             setMode("view");
-            setLcaId(row?.lcaId);
+            setMotoId(row?.id);
             reset({
-                nombre: row?.nombre ?? "",
-                estId: row?.estId ?? 1,
-                aplicaBloque: !!row?.bloqueId,
-                aplicaLocal: !!row?.localId,
+                pilotId: row?.pilotId ?? null,
+                type: row?.type ?? "",
             });
             setVisible(true);
         },
@@ -93,7 +103,7 @@ const VenLocation = forwardRef(({ addItem, updateItem }, ref) => {
 
     const closeForm = () => {
         setVisible(false);
-        setLcaId(null);
+        setMotoId(null);
         setMode("new");
         reset(defaultValues);
         setLoading(false);
@@ -103,37 +113,32 @@ const VenLocation = forwardRef(({ addItem, updateItem }, ref) => {
         const values = getValues();
 
         const payload = {
-            lcaId: lcaId || 0,
-            nombre: (values.nombre || "").trim(),
-            estId: Number(values.estId) || 1,
-            bloqueId: values.aplicaBloque ? 1 : 0,
-            localId: values.aplicaLocal ? 1 : 0,
-            usuario: idusuario,
+            id: motoId || 0,
+            pilotId: values.pilotId,
+            type: (values.type || "").trim(),
         };
 
         setLoading(true);
         try {
-            const { data } = await saveLocationAPI(payload);
+            const { data } = await saveMotoAPI(payload);
 
-            showSuccess(data?.message || "Localización guardada correctamente");
+            showSuccess(data?.message || "Moto guardada correctamente");
 
+            // Crear objeto para actualizar la tabla
+            const pilotoSeleccionado = pilotos.find(p => p.id === values.pilotId);
             const row = {
-                lcaId: lcaId || data.lcaId || data.id,
-                nombre: payload.nombre,
-                estId: payload.estId,
-                bloqueId: payload.bloqueId,
-                localId: payload.localId,
-                bloqueNombre: null,
-                bloqueCodigo: null,
-                localNombre: null,
-                localCodigo: null,
-                fechaRegistro: data.fechaRegistro || new Date().toISOString(),
-                fechaActualizacion: new Date().toISOString(),
+                id: motoId || data.id,
+                pilotId: payload.pilotId,
+                type: payload.type,
+                pilotName: pilotoSeleccionado?.name || "—",
+                createdAt: data.createdAt || new Date().toISOString(),
             };
 
-            if (lcaId) {
-                updateItem && updateItem({ idField: "lcaId", ...row });
+            if (motoId) {
+                // Actualizar
+                updateItem && updateItem({ idField: "id", ...row });
             } else {
+                // Crear nuevo
                 addItem && addItem(row);
             }
 
@@ -148,26 +153,20 @@ const VenLocation = forwardRef(({ addItem, updateItem }, ref) => {
     const HeaderTitle = (
         <h4 className="my-0" style={{ fontWeight: 600 }}>
             {mode === "new"
-                ? "Nueva localización"
+                ? "Nueva Moto"
                 : mode === "view"
-                    ? `Localización #${lcaId}`
-                    : `Editar localización #${lcaId}`}
+                    ? `Moto #${motoId}`
+                    : `Editar Moto #${motoId}`}
         </h4>
     );
 
     const FooterButtons = (
         <div className="flex justify-content-end gap-2 w-full">
-            {/* <Button
-        label="Cerrar"
-        icon="pi pi-times"
-        className="p-button-text"
-        onClick={closeForm}
-      /> */}
             {mode === "view" ? null : (
                 <Button
                     className="p-button-submit"
                     onClick={handleSubmit(handleSave)}
-                    label={lcaId ? "Guardar" : "Registrar"}
+                    label={motoId ? "Guardar" : "Registrar"}
                     loading={loading}
                     disabled={loading}
                     icon="pi pi-save"
@@ -191,7 +190,7 @@ const VenLocation = forwardRef(({ addItem, updateItem }, ref) => {
             style={
                 isMobile
                     ? { width: "100vw", maxWidth: "100vw", height: "100dvh", margin: 0 }
-                    : { width: isTablet ? "50vw" : "40vw", maxWidth: 700 }
+                    : { width: isTablet ? "50vw" : "40vw", maxWidth: 600 }
             }
             contentStyle={
                 isMobile
@@ -200,7 +199,7 @@ const VenLocation = forwardRef(({ addItem, updateItem }, ref) => {
             }
         >
             <div
-                className="location-modal"
+                className="moto-modal"
                 style={{
                     position: "relative",
                     overflow: "hidden",
@@ -217,4 +216,6 @@ const VenLocation = forwardRef(({ addItem, updateItem }, ref) => {
     );
 });
 
-export default VenLocation;
+VenMotos.displayName = "VenMotos";
+
+export default VenMotos;

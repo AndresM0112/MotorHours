@@ -12,6 +12,7 @@ export const saveServicio = async (data, connection = null) => {
     moto_id,                 // id de la moto
     service_type,            // 'ALISTAMIENTO' o 'REPARACION'
     moto_hours,              // horas de servicio
+    alistamiento_items = [], // items de alistamiento (solo para ALISTAMIENTO)
   } = data;
 
   try {
@@ -58,6 +59,14 @@ export const saveServicio = async (data, connection = null) => {
         `UPDATE tbl_services SET ? WHERE id = ?`,
         [servicioPayload, id]
       );
+      
+      // Eliminar items de alistamiento previos para actualizar
+      if (service_type === 'ALISTAMIENTO') {
+        await conn.query(
+          `DELETE FROM tbl_service_alistamiento_tasks WHERE service_id = ?`,
+          [id]
+        );
+      }
     } else {
       // INSERT servicio
       const [ins] = await conn.query(
@@ -65,6 +74,27 @@ export const saveServicio = async (data, connection = null) => {
         servicioPayload
       );
       newServicioId = ins.insertId;
+    }
+
+    // Guardar items de alistamiento si es un servicio de ALISTAMIENTO
+    if (service_type === 'ALISTAMIENTO' && alistamiento_items && alistamiento_items.length > 0) {
+      for (const item of alistamiento_items) {
+        const { id: alistamiento_task_id, realizada, observaciones } = item;
+        
+        if (alistamiento_task_id && realizada !== null && realizada !== undefined) {
+          const alistamientoPayload = {
+            service_id: newServicioId,
+            alistamiento_task_id: Number(alistamiento_task_id),
+            is_done: realizada ? 1 : 0,
+            observations: observaciones ? observaciones.trim() : null,
+          };
+          
+          await conn.query(
+            `INSERT INTO tbl_service_alistamiento_tasks SET ?`,
+            alistamientoPayload
+          );
+        }
+      }
     }
 
     await conn.commit();
@@ -94,13 +124,13 @@ export const getServicios = async (filters = {}, connection = null) => {
     let sql = `
       SELECT 
         s.id,
-        s.moto_id,
-        s.service_type,
-        s.moto_hours,
-        s.created_at,
-        m.type AS moto_type,
-        m.pilot_id,
-        p.name AS pilot_name
+        s.moto_id AS bikeId,
+        s.service_type AS serviceType,
+        s.moto_hours AS hours,
+        s.created_at AS createdAt,
+        m.type AS bikeType,
+        m.pilot_id AS pilotId,
+        p.name AS pilotName
       FROM tbl_services s
       LEFT JOIN tbl_motos m ON m.id = s.moto_id
       LEFT JOIN tbl_pilots p ON p.id = m.pilot_id
@@ -108,6 +138,36 @@ export const getServicios = async (filters = {}, connection = null) => {
     `;
 
     const [rows] = await conn.query(sql);
+
+    // Para cada servicio de ALISTAMIENTO, traer sus items relacionados
+    for (const servicio of rows) {
+      if (servicio.serviceType === 'ALISTAMIENTO') {
+        const [alistamientoItems] = await conn.query(
+          `
+          SELECT 
+            sat.alistamiento_task_id AS id,
+            sat.is_done AS realizada,
+            sat.observations AS observaciones,
+            at.description
+          FROM tbl_service_alistamiento_tasks sat
+          LEFT JOIN tbl_alistamiento_tasks at ON at.id = sat.alistamiento_task_id
+          WHERE sat.service_id = ?
+          ORDER BY sat.alistamiento_task_id ASC
+          `,
+          [servicio.id]
+        );
+
+        servicio.items = alistamientoItems.map(item => ({
+          id: item.id,
+          completed: Boolean(item.realizada),
+          notes: item.observaciones || "",
+          description: item.description
+        }));
+      } else {
+        servicio.items = [];
+      }
+    }
+
     return rows;
   } finally {
     if (release) releaseConnection(conn);
@@ -128,13 +188,13 @@ export const getServicioById = async (id, connection = null) => {
       `
       SELECT 
         s.id,
-        s.moto_id,
-        s.service_type,
-        s.moto_hours,
-        s.created_at,
-        m.type AS moto_type,
-        m.pilot_id,
-        p.name AS pilot_name
+        s.moto_id AS bikeId,
+        s.service_type AS serviceType,
+        s.moto_hours AS hours,
+        s.created_at AS createdAt,
+        m.type AS bikeType,
+        m.pilot_id AS pilotId,
+        p.name AS pilotName
       FROM tbl_services s
       LEFT JOIN tbl_motos m ON m.id = s.moto_id
       LEFT JOIN tbl_pilots p ON p.id = m.pilot_id
@@ -147,7 +207,36 @@ export const getServicioById = async (id, connection = null) => {
       return null;
     }
 
-    return rows[0];
+    const servicio = rows[0];
+
+    // Si es un servicio de ALISTAMIENTO, traer los items relacionados
+    if (servicio.serviceType === 'ALISTAMIENTO') {
+      const [alistamientoItems] = await conn.query(
+        `
+        SELECT 
+          sat.alistamiento_task_id AS id,
+          sat.is_done AS realizada,
+          sat.observations AS observaciones,
+          at.description
+        FROM tbl_service_alistamiento_tasks sat
+        LEFT JOIN tbl_alistamiento_tasks at ON at.id = sat.alistamiento_task_id
+        WHERE sat.service_id = ?
+        ORDER BY sat.alistamiento_task_id ASC
+        `,
+        [id]
+      );
+
+      servicio.alistamiento_items = alistamientoItems.map(item => ({
+        id: item.id,
+        realizada: Boolean(item.realizada),
+        observaciones: item.observaciones || "",
+        description: item.description
+      }));
+    } else {
+      servicio.alistamiento_items = [];
+    }
+
+    return servicio;
   } finally {
     if (release) releaseConnection(conn);
   }
@@ -167,12 +256,19 @@ export const deleteServicio = async (id, connection = null) => {
 
     // Validar que el servicio existe
     const [servicioExists] = await conn.query(
-      `SELECT id FROM tbl_services WHERE id = ?`,
+      `SELECT id, service_type FROM tbl_services WHERE id = ?`,
       [id]
     );
     if (!servicioExists.length) {
       throw new Error("El servicio no existe");
     }
+
+    // Los items de alistamiento se eliminarán automáticamente por CASCADE
+    // Pero podemos ser explícitos para mayor claridad
+    await conn.query(
+      `DELETE FROM tbl_service_alistamiento_tasks WHERE service_id = ?`, 
+      [id]
+    );
 
     await conn.query(`DELETE FROM tbl_services WHERE id = ?`, [id]);
 
@@ -227,9 +323,9 @@ export const paginateServicios = async (params, connection = null) => {
     const order = sortOrder === 1 ? "ASC" : "DESC";
     const sortMap = {
       id: "s.id",
-      moto_id: "s.moto_id",
-      service_type: "s.service_type",
-      moto_hours: "s.moto_hours",
+      bikeId: "s.moto_id", 
+      serviceType: "s.service_type",
+      hours: "s.moto_hours",
       createdAt: "s.created_at",
     };
     const sortColumn = sortMap[sortField] || "s.id";
@@ -244,9 +340,10 @@ export const paginateServicios = async (params, connection = null) => {
           s.service_type LIKE CONCAT('%', ?, '%')
           OR s.moto_hours LIKE CONCAT('%', ?, '%')
           OR m.type LIKE CONCAT('%', ?, '%')
+          OR p.name LIKE CONCAT('%', ?, '%')
         )
       `);
-      vals.push(search, search, search);
+      vals.push(search, search, search, search);
     }
 
     // Filtro por moto_id
@@ -266,13 +363,13 @@ export const paginateServicios = async (params, connection = null) => {
     const sqlData = `
       SELECT
         s.id,
-        s.moto_id,
-        s.service_type,
-        s.moto_hours,
+        s.moto_id AS bikeId,
+        s.service_type AS serviceType,
+        s.moto_hours AS hours,
         s.created_at AS createdAt,
-        m.type AS moto_type,
-        m.pilot_id,
-        p.name AS pilot_name
+        m.type AS bikeType,
+        m.pilot_id AS pilotId,
+        p.name AS pilotName
 
       FROM tbl_services s
       LEFT JOIN tbl_motos m ON m.id = s.moto_id
@@ -283,6 +380,35 @@ export const paginateServicios = async (params, connection = null) => {
     `;
 
     const [rowsData] = await conn.query(sqlData, vals);
+
+    // Para cada servicio de ALISTAMIENTO, traer sus items relacionados
+    for (const servicio of rowsData) {
+      if (servicio.serviceType === 'ALISTAMIENTO') {
+        const [alistamientoItems] = await conn.query(
+          `
+          SELECT 
+            sat.alistamiento_task_id AS id,
+            sat.is_done AS realizada,
+            sat.observations AS observaciones,
+            at.description
+          FROM tbl_service_alistamiento_tasks sat
+          LEFT JOIN tbl_alistamiento_tasks at ON at.id = sat.alistamiento_task_id
+          WHERE sat.service_id = ?
+          ORDER BY sat.alistamiento_task_id ASC
+          `,
+          [servicio.id]
+        );
+
+        servicio.items = alistamientoItems.map(item => ({
+          id: item.id,
+          completed: Boolean(item.realizada),
+          notes: item.observaciones || "",
+          description: item.description
+        }));
+      } else {
+        servicio.items = [];
+      }
+    }
 
     const sqlCount = `
       SELECT COUNT(s.id) AS total
@@ -317,13 +443,13 @@ export const getServiciosDropdown = async (connection = null, filters = {}) => {
       SELECT
         s.id,
         CONCAT('Servicio #', s.id, ' - ', s.service_type, ' (', s.moto_hours, ' hrs)') AS label,
-        s.moto_id,
-        s.service_type,
-        s.moto_hours,
+        s.moto_id AS bikeId,
+        s.service_type AS serviceType,
+        s.moto_hours AS hours,
         s.created_at AS createdAt,
-        m.type AS moto_type,
-        m.pilot_id,
-        p.name AS pilot_name
+        m.type AS bikeType,
+        m.pilot_id AS pilotId,
+        p.name AS pilotName
       FROM tbl_services s
       LEFT JOIN tbl_motos m ON m.id = s.moto_id
       LEFT JOIN tbl_pilots p ON p.id = m.pilot_id

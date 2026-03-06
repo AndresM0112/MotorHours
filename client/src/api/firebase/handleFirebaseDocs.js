@@ -1,6 +1,7 @@
 import { ref, listAll, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from "./firebaseConfig";
-import { deleteEquipDocApi, saveEquipDocApi } from "@api/requests/equipmentDocsAPI";
+// TODO: API eliminada para taller de motos
+// import { deleteEquipDocApi, saveEquipDocApi } from "@api/requests/equipmentDocsAPI";
 import moment from "moment";
 
 export const generateBlob = async (filePath) => {

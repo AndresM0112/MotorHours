@@ -84,7 +84,7 @@
 }
 
 .search-input:focus {
-    border: 1px solid #4CAF50;
+    border: 1px solid #F97316;
     background-color: #fff;
 }
 
@@ -132,7 +132,7 @@
     margin-top: 12px;
     padding: 6px 10px;
     background-color: #f0f2f5;
-    border-left: 4px solid #4CAF50;
+    border-left: 4px solid #F97316;
     border-radius: 8px;
 }
 
@@ -158,7 +158,7 @@
     display: none;
     position: absolute;
     right: 10px;
-    color: #4CAF50;
+    color: #F97316;
 }
 
 .suggestion-item:hover .icon-select {
@@ -167,7 +167,7 @@
 
 /* ================== ELEMENTOS RESALTADOS ================== */
 .suggestion-item.highlighted {
-    background: #4CAF50;
+    background: #F97316;
     color: #333;
 }
 

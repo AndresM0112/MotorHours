@@ -166,6 +166,12 @@ const Pilotos = () => {
 
     const menuItems = [
       {
+        label: "Ver",
+        icon: "pi pi-eye",
+        command: () => venPilotos.current?.viewPiloto(item),
+        visible: true,
+      },
+      {
         label: "Editar",
         icon: "pi pi-pencil",
         command: () => venPilotos.current?.editPiloto(item),
@@ -428,7 +434,7 @@ const Pilotos = () => {
                     loading={loading.table}
                     onScrollEnd={onCustomPage}
                     renderActions={renderActions}
-                    onCardClick={(item) => venPilotos.current?.viewPiloto(item)}
+                    onCardClick={(event) => venPilotos.current?.viewPiloto(event.value)}
                     headerTemplate={headerCardTemplate}
                     bodyTemplate={bodyCardTemplate}
                   />

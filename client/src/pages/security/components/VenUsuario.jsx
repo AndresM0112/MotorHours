@@ -22,10 +22,6 @@ import {
     saveUserProfileAPI,
     getUserByIdApi,
 } from "@api/requests";
-import {
-    getBlocksByClientAPI,
-    getLocalesByBlockAndClientAPI
-} from "@api/requests/blocksApi";
 import useHandleApiError from "@hook/useHandleApiError";
 import GenericFormSection from "@components/data/GenericFormSection";
 import moment from "moment";
@@ -36,24 +32,9 @@ import { TabPanel, TabView } from "primereact/tabview";
 import UserImageUploader from "./UserImageUploader";
 import PermisosTab from "./PermisosTab";
 import { uploadFile } from "@api/firebase/handleFirebase";
-import { getAllAreasAPI } from "@api/requests/areasApi";
-import { getAllBlocksAPI } from "@api/requests/blocksApi";
-import { getAllAPI as getAllInsurersAPI } from "@api/requests/insureApi";
-import { getAllAPI as getAllrefundableTypeAPI } from "@api/requests/RefundableTypeApi";
 import '../../home/components/styles/Tickets.css';
 
 const asNumSorted = (arr = []) => [...(arr || [])].map(Number).sort((a, b) => a - b);
-
-const normalizeProjects = (arr = []) =>
-    (arr || [])
-        .map(r => ({
-            id: Number(r.id ?? r.proId ?? r.proyectoId ?? r.projectId),
-            nombre: r.nombre ?? r.proNombre ?? r.projectName ?? String(
-                r.id ?? r.proId ?? r.proyectoId ?? r.projectId ?? ''
-            ),
-        }))
-        .filter(p => Number.isFinite(p.id));
-
 
 const asValidId = (v) => {
     const n = Number(v);
@@ -148,41 +129,11 @@ const VenUsuario = forwardRef(
         useEffect(() => {
             const fetchLists = async () => {
                 try {
-                    const [refundableTypeRes] = await Promise.all([
-                        getAllrefundableTypeAPI(),
-                    ]);
-
-                    let projects = [];
-                    if (isClient && usuId > 0) {
-                        // Bloques asignados al cliente
-                        const { data: blocksByClient } = await getBlocksByClientAPI(usuId);
-                        projects = (blocksByClient || []).map(r => ({
-                            id: Number(r.id ?? r.proId ?? r.proyectoId ?? r.projectId),
-                            nombre: r.nombre ?? r.proNombre ?? r.projectName ?? String(r.id ?? r.proId ?? '')
-                        }));
-                        // Fallback: si no tiene bloques asignados, carga todos (para no dejar vacío el dropdown)
-                        if (projects.length === 0) {
-                            const projectsRes = await getAllBlocksAPI();
-                            projects = (projectsRes.data || []).map(r => ({
-                                id: Number(r.id ?? r.proId ?? r.proyectoId ?? r.projectId),
-                                nombre: r.nombre ?? r.proNombre ?? r.projectName ?? String(r.id ?? r.proId ?? '')
-                            }));
-                        }
-                    } else {
-                        // No es cliente o es alta → todos
-                        const projectsRes = await getAllBlocksAPI();
-                        projects = (projectsRes.data || []).map(r => ({
-                            id: Number(r.id ?? r.proId ?? r.proyectoId ?? r.projectId),
-                            nombre: r.nombre ?? r.proNombre ?? r.projectName ?? String(r.id ?? r.proId ?? '')
-                        }));
-                    }
-
-
-
+                    // TODO: Simplificar para dominio del taller - APIs eliminadas 
                     setLists((prev) => ({
                         ...prev,
-                        projectsLists: projects,
-                        refundableTypeList: refundableTypeRes.data,
+                        projectsLists: [], // Simplificado para taller
+                        refundableTypeList: [], // Simplificado para taller  
                     }));
                 } catch (error) {
                     console.error("Error al cargar listas:", error);
@@ -223,41 +174,17 @@ const VenUsuario = forwardRef(
         }, [localId, setValue]);
 
 
-        // 🔁 Cuando cambia el bloque seleccionado, cargar locales dependientes
-        useEffect(() => {
-            if (!visible) return;
-            if (!bloqueId) {
-                setLocalesOptions([]);
-                setValue("localId", null);
-                return;
-            }
-            getLocalesByBlockAndClientAPI({ bloId: bloqueId, clientId: isClient ? usuId : null })
-                .then(({ data }) => {
-                    const mapped = (data || []).map(r => ({
-                        id: Number(r.etaId ?? r.id),
-                        nombre: r.nombre,
-                    }));
-                    setLocalesOptions(mapped);
+        // TODO: Simplificado para taller - eliminar lógica de bloques/locales
+        // useEffect(() => {
+        //     if (!visible) return;
+        //     if (!bloqueId) {
+        //         setLocalesOptions([]);
+        //         setValue("localId", null);
+        //         return;
+        //     }
+        //     // getLocalesByBlockAndClientAPI eliminada
+        // }, [bloqueId, visible, setValue, methods, usuId, isClient]);
 
-                    // 👇 solo autoseleccionar si NO hay un local ya puesto
-                    const current = methods.getValues("localId");
-                    if (current == null) {
-                        if (mapped.length === 1) {
-                            setValue("localId", mapped[0].id, { shouldDirty: true, shouldValidate: true });
-                        }
-                        // si hay varios y no hay current, lo dejamos en null para que el usuario elija
-                    }
-                    // importante: NO limpiar localId si ya había uno, aunque no esté en la lista (lo controla editUser)
-                })
-                .catch(err => {
-                    if (err?.response?.status === 404) {
-                        setLocalesOptions([]);
-                        setValue("localId", null);
-                    } else {
-                        handleApiError(err);
-                    }
-                });
-        }, [visible, bloqueId, isClient, usuId]);
         const resetFormState = () => {
             reset(defaultValues);
             setUsuId(0);
@@ -350,73 +277,63 @@ const VenUsuario = forwardRef(
 
                 // 2) cargar proyectos (bloques)
                 let projects = [];
-                if (data.perfil === 3 && item.usuId) {
-                    try {
-                        const { data: blocksByClient } = await getBlocksByClientAPI(item.usuId);
-                        projects = normalizeProjects(blocksByClient);
-                    } catch { }
-                }
-                if (projects.length === 0) {
-                    const projectsRes = await getAllBlocksAPI();
-                    projects = normalizeProjects(projectsRes.data);
-                }
+                // TODO: Simplificado para taller de motos
+                // if (data.perfil === 3 && item.usuId) {
+                //     try {
+                //         const { data: blocksByClient } = await getBlocksByClientAPI(item.usuId);
+                //         projects = normalizeProjects(blocksByClient);
+                //     } catch { }
+                // }
+                // if (projects.length === 0) {
+                //     const projectsRes = await getAllBlocksAPI();
+                //     projects = normalizeProjects(projectsRes.data);
+                // }
 
-                // 🧠 AUTODETECCIÓN: si tengo localId pero bloqueId es null, busca el bloque que contiene ese local
-                let detectedBloqueId = existingBloqueId;
-                let locals = []; // <- lo usaremos también abajo
+                projects = []; // Simplificado para taller
 
-                if (!detectedBloqueId && existingLocalId) {
+                // TODO: Simplificado para taller - eliminar autodetección de bloques
+                let detectedBloqueId = null; // Simplificado para taller
+                let locals = [];
 
-                    for (const p of projects) {
-                        try {
-                            const { data: locs } = await getLocalesByBlockAndClientAPI({
-                                bloId: p.id,
-                                clientId: data.perfil === 3 ? item.usuId : null,
-                            });
-                            const mapped = (locs || []).map(r => ({ id: Number(r.etaId ?? r.id), nombre: r.nombre }));
-                            const hit = mapped.some(l => Number(l.id) === Number(existingLocalId));
-                            console.log('[DETECT] revisando bloque', p.id, '→ contiene local?', hit);
-                            if (hit) {
-                                detectedBloqueId = p.id;
-                                locals = mapped; // ya tenemos los locales del bloque correcto
-                                break;
-                            }
-                        } catch (e) {
-                            // silencioso
-                        }
-                    }
-                }
+                // if (!detectedBloqueId && existingLocalId) {
+                //     for (const p of projects) {
+                //         try {
+                //             const { data: locs } = await getLocalesByBlockAndClientAPI({
+                //                 bloId: p.id,
+                //                 clientId: data.perfil === 3 ? item.usuId : null,
+                //             });
+                //             const mapped = (locs || []).map(r => ({ id: Number(r.etaId ?? r.id), nombre: r.nombre }));
+                //             const hit = mapped.some(l => Number(l.id) === Number(existingLocalId));
+                //             console.log('[DETECT] revisando bloque', p.id, '→ contiene local?', hit);
+                //             if (hit) {
+                //                 detectedBloqueId = p.id;
+                //                 locals = mapped;
+                //                 break;
+                //             }
+                //         } catch (e) {
+                //             // silencioso
+                //         }
+                //     }
+                // }
 
                 setLists(prev => ({ ...prev, projectsLists: projects }));
 
-                // Si aún no cargamos locals (caso normal cuando sí había bloque), hazlo:
-                if (!locals.length && detectedBloqueId) {
-                    try {
-                        const { data: locs } = await getLocalesByBlockAndClientAPI({
-                            bloId: detectedBloqueId,
-                            clientId: data.perfil === 3 ? item.usuId : null,
-                        });
-                        locals = (locs || []).map(r => ({ id: Number(r.etaId ?? r.id), nombre: r.nombre }));
-                    } catch { }
-                }
-                setLocalesOptions(locals);
+                // TODO: Simplificado para taller - sin lógica de locales
+                // if (!locals.length && detectedBloqueId) {
+                //     try {
+                //         const { data: locs } = await getLocalesByBlockAndClientAPI({
+                //             bloId: detectedBloqueId,
+                //             clientId: data.perfil === 3 ? item.usuId : null,
+                //         });
+                //         locals = (locs || []).map(r => ({ id: Number(r.etaId ?? r.id), nombre: r.nombre }));
+                //     } catch { }
+                // }
+                
+                setLocalesOptions([]);  // Simplificado para taller
 
-                // 4) Setear valores en RHF con lo detectado/cargado
-                if (detectedBloqueId && projects.some(p => p.id === detectedBloqueId)) {
-                    setValue("bloqueId", detectedBloqueId, { shouldDirty: false, shouldValidate: true });
-
-                } else {
-                    setValue("bloqueId", null, { shouldDirty: false, shouldValidate: true });
-
-                }
-
-                if (existingLocalId && locals.some(o => o.id === existingLocalId)) {
-                    setValue("localId", existingLocalId, { shouldDirty: false, shouldValidate: true });
-
-                } else {
-                    setValue("localId", null, { shouldDirty: false, shouldValidate: true });
-
-                }
+                // TODO: Simplificado - revisar si es necesario para taller
+                setValue("bloqueId", null, { shouldDirty: false, shouldValidate: true });
+                setValue("localId", null, { shouldDirty: false, shouldValidate: true });
 
                 setVisible(true);
             } catch (err) {
@@ -429,8 +346,11 @@ const VenUsuario = forwardRef(
 
         useEffect(() => {
             if (visible) {
-                getAllInsurersAPI().then((res) => setInsurersOptions(res.data || []));
-                getAllAreasAPI().then((res) => setAreas(res.data || []));
+                // TODO: Simplificado para taller de motos - APIs eliminadas
+                // getAllInsurersAPI().then((res) => setInsurersOptions(res.data || []));
+                // getAllAreasAPI().then((res) => setAreas(res.data || []));
+                setInsurersOptions([]);
+                setAreas([]);
 
                 // if (isClient) {
                 //     getUnidadesByClienteAPI(usuId)

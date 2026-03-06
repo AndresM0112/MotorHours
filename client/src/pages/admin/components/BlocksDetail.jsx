@@ -1,14 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { TabView, TabPanel } from "primereact/tabview";
-import {
-  getLocalesByBlockAPI,
-  createLocalAPI,
-  updateLocalAPI,
-  deleteLocalAPI,
-  getClientsAPI,
-  getPropietariosAPI,
-  setPropietariosAPI,
-} from "../../../api/requests/blocksApi";
+
 import "../../../styles/ProjectDetail.css";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
@@ -873,7 +865,7 @@ const BlocksDetailTabs = ({
                             label={labelText}
                             icon={hasMain ? "pi pi-star-fill" : "pi pi-user"}
                             iconPos="left"
-                            className={`p-button-sm p-button-text text-left p-2 border-1 surface-border ${hasMain ? "surface-100 text-green-700 border-green-300" : "surface-0 text-700 border-300"}`}
+                            className={`p-button-sm p-button-text text-left p-2 border-1 surface-border ${hasMain ? "surface-100 text-orange-700 border-orange-300" : "surface-0 text-700 border-300"}`}
                             style={{ borderRadius: "6px", height: "36px", justifyContent: "flex-start", fontWeight: 500, display: "inline-flex" }}
                             onClick={(e) => { if (opRef.current) opRef.current.toggle(e); }}
                           />
@@ -1133,7 +1125,7 @@ const BlocksDetailTabs = ({
                     label={labelText}
                     icon={hasMain ? "pi pi-star-fill" : "pi pi-user"}
                     iconPos="left"
-                    className={`p-button-sm p-button-text text-left p-2 border-1 surface-border ${hasMain ? "surface-100 text-green-700 border-green-300" : "surface-0 text-700 border-300"}`}
+                    className={`p-button-sm p-button-text text-left p-2 border-1 surface-border ${hasMain ? "surface-100 text-orange-700 border-orange-300" : "surface-0 text-700 border-300"}`}
                     style={{ borderRadius: 6, height: 32, justifyContent: "flex-start", fontWeight: 500, display: "inline-flex", maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
                     onClick={(e) => { if (opRef.current) opRef.current.toggle(e); }}
                   />

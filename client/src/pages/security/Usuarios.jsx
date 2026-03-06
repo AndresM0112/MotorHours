@@ -36,8 +36,7 @@ import {
 } from "@api/requests";
 
 // import { importPropertiesAPI } from "@api/blocks.Api";
-
-import { importPropertiesAPI } from "@api/requests/blocksApi";
+// import { importPropertiesAPI } from "@api/requests/blocksApi";  // Eliminado para taller
 
 // Utilities
 import { estados, getInitials, propsSelect } from "@utils/converAndConst";
@@ -53,7 +52,6 @@ import { TabPanel, TabView } from "primereact/tabview";
 import EmptyState from "@components/data/EmptyState";
 import { Avatar } from "primereact/avatar";
 import PreImportEmpleados from "./components/PreImportEmpleados";
-import PreImportBloquesLocalesOwners from "./components/PreImportBloquesLocalesOwners";
 import InfiniteScrollCards from "@components/ui/InfiniteScrollCards";
 
 // Lazy Loaded Components
@@ -1059,22 +1057,22 @@ const Usuarios = () => {
                         toast={{ success: showSuccess, error: (m) => handleApiError({ message: m }) }}
                     />
 
+                {/* TODO: Componente de importación eliminado para taller
                     <PreImportBloquesLocalesOwners
                         visible={importBlocksVisible}
                         onHide={() => setImportBlocksVisible(false)}
                         onImported={() => {
-                            // Si necesitas refrescar algo tras importar, hazlo aquí.
-                            // Por ahora cerramos y listo.
                             setImportBlocksVisible(false);
                         }}
                         importApi={importPropertiesAPI}
                         toast={{
                             success: (m) => showSuccess(m),
                             error: (m) => handleApiError({ message: m }),
-                            warn: (m) => showSuccess(m),  // si tienes toast.warn úsalo aquí
+                            warn: (m) => showSuccess(m),
                             info: (m) => showSuccess(m),
                         }}
                     />
+                */}
                 </div>
             )}
         </>

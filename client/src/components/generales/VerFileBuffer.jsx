@@ -285,7 +285,6 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Dialog } from "primereact/dialog";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "primereact/button";
-import { previewTicketEvidenceAPI, downloadTicketEvidenceAPI } from "@api/requests/ticketsApi";
 import useHandleApiError from "@hook/useHandleApiError";
 
 const VIEWERS = { pdfjsCanvas: "pdfjsCanvas", embed: "embed" };

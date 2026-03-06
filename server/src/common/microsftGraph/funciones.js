@@ -77,7 +77,7 @@ export const eliminarArchivoSharepoint = async (fileId) => {
 async function resolveModuleFolderId({
   graph,
   driveId,
-  moduleName, // p.ej. "Sistema Gestion de tickets La Mayorista"
+  moduleName, // p.ej. "Sistema Taller MotorHours"
   dbFolderId, // rules?.carpeta (puede venir null)
 }) {
   const rootId = await ensurePath(graph, driveId, ["LA MAYORISTA"]);
@@ -148,7 +148,7 @@ export async function cargarASharepoint(
       await getRulesSharepoint();
 
     // 0) Resolver/validar el folder del módulo bajo la raíz global
-    const MODULE_NAME = "Sistema Gestion de tickets La Mayorista";
+    const MODULE_NAME = "Sistema Taller MotorHours";
     const { moduleFolderId } = await resolveModuleFolderId({
       graph: client,
       driveId,

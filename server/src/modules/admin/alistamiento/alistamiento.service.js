@@ -84,7 +84,7 @@ export const getAlistamientos = async (filters = {}, connection = null) => {
         id,
         description,
         active,
-        created_at
+        created_at AS createdAt
       FROM tbl_alistamiento_tasks
       WHERE 1=1
     `;
@@ -120,7 +120,7 @@ export const getAlistamientoById = async (id, connection = null) => {
         id,
         description,
         active,
-        created_at
+        created_at AS createdAt
       FROM tbl_alistamiento_tasks
       WHERE id = ?
       `,

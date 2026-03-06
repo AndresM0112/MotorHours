@@ -12,7 +12,8 @@ import UserImageUploader from "./UserImageUploader";
 import { useMediaQueryContext } from "@context/mediaQuery/mediaQueryContext";
 import { ToastContext } from "@context/toast/ToastContext";
 import { deleteNewnessUserAPI, getNewnessUserAPI, saveNewnessUserAPI } from "@api/requests";
-import { getNewnessApi } from "@api/requests/newnessAPI";
+// TODO: API eliminada para taller de motos
+// import { getNewnessApi } from "@api/requests/newnessAPI";
 
 const SidebarNovedadesUsuario = ({ visible, onHide, usuario, listperfiles }) => {
     const [activeIndex, setActiveIndex] = useState(0);

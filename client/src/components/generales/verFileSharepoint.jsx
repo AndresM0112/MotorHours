@@ -5,10 +5,6 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "primereact/button";
 import Iframe from "react-iframe";
 
-import {
-  previewTicketEvidenceAPI,
-  downloadTicketEvidenceAPI,
-} from "@api/requests/ticketsApi";
 import useHandleApiError from "@hook/useHandleApiError";
 
 export const VerFileSharePoint = ({ title = "", visible, onClose, fileId, fileUrl, }) => {

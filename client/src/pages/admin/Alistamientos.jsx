@@ -36,7 +36,7 @@ const OverlayFiltersMemo = React.memo(LazyOverlayFilters);
 
 // Color helper para estado
 const colorMap = {
-  activo: "#28a745",
+  activo: "#F97316",
   inactivo: "#dc3545",
   default: "#6c757d",
 };
@@ -160,19 +160,28 @@ const Alistamientos = () => {
     async (alistamientoId) => {
       try {
         await deleteAlistamientoAPI({ id: alistamientoId });
-        deleteItem(alistamientoId);
         showSuccess("Alistamiento eliminado correctamente");
+        
+        // Recargar datos para mantener consistencia con el servidor
+        // y manejar correctamente la paginación
+        await reloadData();
       } catch (error) {
         handleApiError(error);
       }
     },
-    [deleteItem, showSuccess, handleApiError]
+    [showSuccess, handleApiError, reloadData]
   );
 
   const renderActions = (item) => {
     const { id } = item;
 
     const menuItems = [
+      {
+        label: "Ver",
+        icon: "pi pi-eye",
+        command: () => venAlistamiento.current?.viewAlistamiento(item),
+        visible: true,
+      },
       {
         label: "Editar",
         icon: "pi pi-pencil",
@@ -426,7 +435,7 @@ const Alistamientos = () => {
                     loading={loading.table}
                     onScrollEnd={onCustomPage}
                     renderActions={renderActions}
-                    onCardClick={(item) => venAlistamiento.current?.viewAlistamiento(item)}
+                    onCardClick={(event) => venAlistamiento.current?.viewAlistamiento(event.value)}
                     headerTemplate={headerCardTemplate}
                     bodyTemplate={bodyCardTemplate}
                   />

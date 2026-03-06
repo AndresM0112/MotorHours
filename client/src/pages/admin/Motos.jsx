@@ -15,6 +15,7 @@ import { Chip } from "primereact/chip";
 
 // API
 import { paginateMotosAPI, deleteMotoAPI } from "@api/requests/motosAPI";
+import VenMotos from "./components/modals/VenMotos";
 
 // Context & Hooks
 import { ToastContext } from "@context/toast/ToastContext";
@@ -35,7 +36,7 @@ const OverlayFiltersMemo = React.memo(LazyOverlayFilters);
 
 // Color helper para estado
 const colorMap = {
-  activo: "#28a745",
+  activo: "#F97316",
   inactivo: "#dc3545",
   default: "#6c757d",
 };
@@ -441,6 +442,29 @@ const Motos = () => {
           </div>
         </div>
       </Suspense>
+
+      {/* ConfirmDialog para eliminación */}
+      <ConfirmDialog
+        visible={deleteDialogVisible}
+        onHide={() => setDeleteDialogVisible(false)}
+        message={
+          currentMoto
+            ? `¿Deseas eliminar la moto "${currentMoto.type}"?`
+            : "¿Deseas eliminar esta moto?"
+        }
+        accept={() => {
+          deleteApi(currentMoto.id);
+          setDeleteDialogVisible(false);
+        }}
+        reject={() => setDeleteDialogVisible(false)}
+        acceptLabel="Si"
+        acceptClassName="p-button-danger"
+        header="Confirmación"
+        icon="pi pi-exclamation-triangle"
+      />
+
+      {/* Modal de registro/edición */}
+      <VenMotos ref={venMoto} addItem={addItem} updateItem={updateItem} />
     </div>
   );
 };

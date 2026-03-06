@@ -177,15 +177,15 @@
 
     &:hover,
     &:focus {
-        background-color: #f0f0f0 !important;
-        border-left: 3px solid #4CAF50 !important;
+        background-color: #fff8f3 !important;
+        border-left: 3px solid #F97316 !important;
         font-weight: 500 !important;
     }
 
     &.router-link-active,
     &.router-link-exact-active {
-        background-color: #e8f0fe !important; // azul clarito activo
-        border-left: 3px solid #4CAF50 !important;
+        background-color: #fff8f3 !important; // naranja clarito activo
+        border-left: 3px solid #F97316 !important;
         font-weight: 600 !important;
     }
 }

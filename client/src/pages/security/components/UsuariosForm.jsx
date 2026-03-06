@@ -27,7 +27,6 @@ import { TabPanel, TabView } from "primereact/tabview";
 import UserImageUploader from "./UserImageUploader";
 import PermisosTab from "./PermisosTab";
 import { uploadFile } from "@api/firebase/handleFirebase";
-import { getAllAreasAPI } from "@api/requests/areasApi";
 
 const VenUsuario = ({
     addItem,
@@ -83,7 +82,9 @@ const VenUsuario = ({
     const [permisosSeleccionados, setPermisosSeleccionados] = useState([]);
 
     useEffect(() => {
-        getAllAreasAPI().then((res) => setAreas(res.data));
+        // TODO: Reemplazar con API del taller cuando sea necesario
+        // getAllAreasAPI().then((res) => setAreas(res.data));
+        setAreas([]);
     }, []);
 
     const newUser = () => {

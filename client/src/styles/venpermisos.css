@@ -23,7 +23,7 @@
 .permission-icon {
     font-size: 1em;
     color: #ffffff;
-    background-color: #4CAF50;
+    background-color: #F97316;
     padding: 10px;
     border-radius: 5px;
     margin-right: 15px;
@@ -52,7 +52,7 @@
 }
 
 .parent-description {
-    color: #4CAF50;
+    color: #F97316;
     margin: 1px 0;
 }
 

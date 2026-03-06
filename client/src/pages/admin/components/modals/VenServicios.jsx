@@ -27,7 +27,7 @@ const defaultValues = {
     moto_type: "",
     moto_hours: "",
     service_type: "",  // Empezar vacío para que el usuario seleccione
-    alistamiento_items: [],
+    items: [],
 };
 
 // Componente para manejar los items de alistamiento
@@ -40,13 +40,13 @@ const AlistamientoItemsSection = ({ alistamientos, values, setValue, readOnly })
             const initialStates = {};
             
             // Si hay valores existentes (modo edición/vista), usar esos valores
-            const existingItems = values.alistamiento_items || [];
+            const existingItems = values.items || [];
             
             alistamientos.forEach(item => {
                 const existingItem = existingItems.find(ei => ei.id === item.id);
                 initialStates[item.id] = {
-                    realizada: existingItem?.realizada ?? null,
-                    observaciones: existingItem?.observaciones ?? ""
+                    realizada: existingItem?.completed ?? null,
+                    observaciones: existingItem?.notes ?? ""
                 };
             });
             setAlistamientoStates(initialStates);
@@ -90,7 +90,7 @@ const AlistamientoItemsSection = ({ alistamientos, values, setValue, readOnly })
                     observaciones: state.observaciones ? state.observaciones.trim() : ""
                 }));
             
-            setValue("alistamiento_items", completedItems, { shouldValidate: false });
+            setValue("items", completedItems, { shouldValidate: false });
         }
     }, [alistamientoStates, setValue]);
 
@@ -184,13 +184,15 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
     const serviceType = watch("service_type");
 
     useEffect(() => {
-        if (pilotoId) {
+        // Solo actualizar moto_type automáticamente en modo "new"
+        // En modo view/edit, preservar los datos originales
+        if (mode === "new" && pilotoId) {
             const selectedPiloto = pilotos.find((p) => p.id === pilotoId);
             setValue("moto_type", selectedPiloto?.motos?.[0]?.type || "N/A");
-        } else {
+        } else if (mode === "new" && !pilotoId) {
             setValue("moto_type", "");
         }
-    }, [pilotoId, pilotos, setValue]);
+    }, [pilotoId, pilotos, setValue, mode]);
 
     // Campos del formulario excluyendo los alistamientos que manejaremos por separado
     const fields = useMemo(() => {
@@ -222,27 +224,35 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
         editServicio: (row) => {
             setMode("edit");
             setServicioId(row?.id || null);
+            
+            // Mapear correctamente los datos del backend
+            const resetData = {
+                pilotoId: row?.pilotId || null, // pilotId del backend
+                moto_type: row?.bikeType || "",
+                moto_hours: row?.hours?.toString() || "",
+                service_type: row?.serviceType || "",
+                items: row?.items || [],
+            };
+            
+            reset(resetData);
             fetchDropdowns();
-            reset({
-                pilotoId: row?.pilotoId || row?.pilot_id, // Soportar ambos nombres
-                moto_type: row?.moto_type,
-                moto_hours: row?.moto_hours?.toString() || "",
-                service_type: row?.service_type,
-                alistamiento_items: row?.alistamiento_items || [],
-            });
             setVisible(true);
         },
         viewServicio: (row) => {
             setMode("view");
             setServicioId(row?.id || null);
+            
+            // Mapear correctamente los datos del backend para vista
+            const resetData = {
+                pilotoId: row?.pilotId || null, 
+                moto_type: row?.bikeType || "",
+                moto_hours: row?.hours?.toString() || "",
+                service_type: row?.serviceType || "",
+                items: row?.items || [],
+            };
+            
+            reset(resetData);
             fetchDropdowns();
-            reset({
-                pilotoId: row?.pilotoId || row?.pilot_id, // Soportar ambos nombres
-                moto_type: row?.moto_type,
-                moto_hours: row?.moto_hours?.toString() || "",
-                service_type: row?.service_type,
-                alistamiento_items: row?.alistamiento_items || [],
-            });
             setVisible(true);
         },
         onClose: () => {
@@ -263,7 +273,7 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
 
         // Validación para alistamientos
         if (values.service_type === 'ALISTAMIENTO') {
-            if (!values.alistamiento_items || values.alistamiento_items.length === 0) {
+            if (!values.items || values.items.length === 0) {
                 handleApiError(new Error("Debe completar al menos un item de alistamiento"));
                 return;
             }
@@ -284,7 +294,7 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
             moto_id: moto_id, // Enviar moto_id en lugar de pilotoId
             moto_hours: parseFloat(values.moto_hours) || 0,
             service_type: values.service_type,
-            alistamiento_items: values.service_type === 'ALISTAMIENTO' ? values.alistamiento_items : [],
+            alistamiento_items: values.service_type === 'ALISTAMIENTO' ? values.items : [],
         };
 
         setLoading(true);
@@ -304,12 +314,11 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
             const row = {
                 id: servicioId || data.id,
                 pilotoId: values.pilotoId, // Mantener pilotoId para la tabla
-                pilot_id: values.pilotoId, // También para compatibilidad
-                pilot_name: selectedPiloto?.name || "Sin piloto", // Nombre del piloto
-                moto_hours: payload.moto_hours,
-                service_type: payload.service_type,
-                moto_type: selectedPiloto?.motos?.[0]?.type || "N/A",
-                alistamiento_items: alistamientosConNombres,
+                pilotName: selectedPiloto?.name || "Sin piloto", // Nombre del piloto
+                hours: payload.moto_hours,
+                serviceType: payload.service_type,
+                bikeType: selectedPiloto?.motos?.[0]?.type || "N/A",
+                items: alistamientosConNombres,
                 createdAt: data.createdAt || new Date().toISOString(),
             };
 
@@ -371,7 +380,7 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
             }
             contentStyle={
                 isMobile
-                    ? { display: "flex", flexDirection: "column", overflow: "hidden", padding: "1rem" }
+                    ? { display: "flex", flexDirection: "column", overflow: "auto", padding: "1rem" }
                     : {}
             }
         >
@@ -379,8 +388,9 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
                 className="servicio-modal"
                 style={{
                     position: "relative",
-                    overflow: "hidden",
+                    overflow: isMobile ? "auto" : "hidden",
                     height: isMobile ? "100%" : "auto",
+                    paddingBottom: isMobile ? "60px" : "0", // Espacio para el botón en móvil
                 }}
             >
                 <FormProvider {...methods}>

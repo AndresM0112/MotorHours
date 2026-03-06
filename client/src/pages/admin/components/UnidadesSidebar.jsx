@@ -8,12 +8,7 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { MultiSelect } from "primereact/multiselect";
 import { getClientsApi } from "@api/requests";
-import {
-    getUnidadesByEtapaAPI,
-    createUnidadAPI,
-    updateUnidadAPI,
-    deleteUnidadAPI,
-} from "../../../api/requests/blocksApi";
+
 import { useMediaQueryContext } from "@context/mediaQuery/mediaQueryContext";
 import "../../../styles/ProjectDetail.css";
 import { propsSelectVS } from "@utils/converAndConst";

@@ -124,7 +124,7 @@ export const getPilotos = async (filters = {}, connection = null) => {
         p.name,
         p.phone,
         p.email,
-        p.created_at,
+        p.created_at AS createdAt,
         m.id AS motoId,
         m.type AS motoType
       FROM tbl_pilots p
@@ -141,7 +141,7 @@ export const getPilotos = async (filters = {}, connection = null) => {
           name: row.name,
           phone: row.phone,
           email: row.email,
-          createdAt: row.created_at,
+          createdAt: row.createdAt,
           motos: []
         };
       }
@@ -176,7 +176,7 @@ export const getPilotoById = async (id, connection = null) => {
         p.name,
         p.phone,
         p.email,
-        p.created_at,
+        p.created_at AS createdAt,
         m.id AS motoId,
         m.type AS motoType
       FROM tbl_pilots p
@@ -196,7 +196,7 @@ export const getPilotoById = async (id, connection = null) => {
       name: rows[0].name,
       phone: rows[0].phone,
       email: rows[0].email,
-      created_at: rows[0].created_at,
+      createdAt: rows[0].createdAt,
       motos: rows
         .filter((r) => r.motoId)
         .map((r) => ({
@@ -412,7 +412,7 @@ export const getPilotosDropdown = async (connection = null, filters = {}) => {
         p.name,
         p.phone,
         p.email,
-        p.created_at,
+        p.created_at AS createdAt,
         m.id AS motoId,
         m.type AS motoType
       FROM tbl_pilots p
@@ -429,7 +429,7 @@ export const getPilotosDropdown = async (connection = null, filters = {}) => {
           name: row.name,
           phone: row.phone,
           email: row.email,
-          created_at: row.created_at,
+          createdAt: row.createdAt,
           motos: []
         };
       }

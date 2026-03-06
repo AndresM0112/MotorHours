@@ -148,13 +148,16 @@ const Servicios = () => {
     async (servicioId) => {
       try {
         await deleteServicioAPI({ id: servicioId });
-        deleteItem(servicioId);
         showSuccess("Servicio eliminado correctamente");
+        
+        // Recargar datos para mantener consistencia con el servidor
+        // y manejar correctamente la paginación
+        await reloadData();
       } catch (error) {
         handleApiError(error);
       }
     },
-    [deleteItem, showSuccess, handleApiError]
+    [showSuccess, handleApiError, reloadData]
   );
 
   const renderActions = (item) => {
@@ -166,6 +169,12 @@ const Servicios = () => {
         icon: "pi pi-eye",
         command: () => venServicios.current?.viewServicio(item),
         visible: true,
+      },
+      {
+        label: "Editar", 
+        icon: "pi pi-pencil",
+        command: () => venServicios.current?.editServicio(item),
+        visible: canEdit,
       },
       {
         label: "Eliminar",
@@ -240,27 +249,27 @@ const Servicios = () => {
       mobile: true,
     },
     {
-      field: "pilot_name",
+      field: "pilotName",
       header: "Piloto",
       style: { minWidth: "15rem" },
-      body: ({ pilot_name }) => pilot_name || "Sin piloto",
+      body: ({ pilotName }) => pilotName || "Sin piloto",
       mobile: true,
     },
     {
-      field: "moto_type",
+      field: "bikeType",
       header: "Moto",
       style: { minWidth: "15rem" },
       mobile: true,
     },
     {
-      field: "service_type",
+      field: "serviceType",
       header: "Tipo de Servicio",
       style: { minWidth: "15rem" },
-      body: ({ service_type }) => {
-        const color = service_type === "ALISTAMIENTO" ? "#28a745" : "#ffc107";
+      body: ({ serviceType }) => {
+        const color = serviceType === "ALISTAMIENTO" ? "#F97316" : "#ffc107";
         return (
           <Chip
-            label={service_type}
+            label={serviceType}
             className="text-white"
             style={{ backgroundColor: color }}
           />
@@ -269,10 +278,10 @@ const Servicios = () => {
       mobile: true,
     },
     {
-      field: "moto_hours",
+      field: "hours",
       header: "Horas de Moto",
       style: { maxWidth: "12rem" },
-      body: ({ moto_hours }) => `${moto_hours} hrs`,
+      body: ({ hours }) => `${hours} hrs`,
       mobile: true,
     },
     {
@@ -285,9 +294,9 @@ const Servicios = () => {
 
   // Card header para mobile
   const headerCardTemplate = (item) => {
-    const piloto = item?.pilot_name || "Sin piloto";
-    const moto = item?.moto_type || "Moto";
-    const tipo = item?.service_type || "—";
+    const piloto = item?.pilotName || "Sin piloto";
+    const moto = item?.bikeType || "Moto";
+    const tipo = item?.serviceType || "—";
 
     return (
       <div
@@ -318,17 +327,17 @@ const Servicios = () => {
       }}
     >
       <div>
-        <strong>Moto:</strong> {item.moto_type || "—"}
+        <strong>Moto:</strong> {item.bikeType || "—"}
       </div>
       <div>
-        <strong>Horas:</strong> {item.moto_hours || "—"} hrs
+        <strong>Horas:</strong> {item.hours || "—"} hrs
       </div>
       <div>
         <strong>Tipo:</strong>{" "}
         <Chip
-          label={item.service_type}
+          label={item.serviceType}
           style={{
-            backgroundColor: item.service_type === "ALISTAMIENTO" ? "#28a745" : "#ffc107",
+            backgroundColor: item.serviceType === "ALISTAMIENTO" ? "#F97316" : "#ffc107",
             color: "#fff",
             fontSize: 11,
             padding: "2px 6px",
@@ -439,7 +448,7 @@ const Servicios = () => {
                     loading={loading.table}
                     onScrollEnd={onCustomPage}
                     renderActions={renderActions}
-                    onCardClick={(item) => venServicios.current?.viewServicio(item)}
+                    onCardClick={(event) => venServicios.current?.viewServicio(event.value)}
                     headerTemplate={headerCardTemplate}
                     bodyTemplate={bodyCardTemplate}
                   />
@@ -466,6 +475,7 @@ const Servicios = () => {
                     onCustomPage={onCustomPage}
                     setPagination={setPagination}
                     actionBodyTemplate={renderActions}
+                    onRowClick={(item) => venServicios.current?.viewServicio(item)}
                     emptyMessage={
                       <EmptyState
                         title="No hay servicios registrados"
