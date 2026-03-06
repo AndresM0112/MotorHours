@@ -96,12 +96,13 @@ export const loginController = async (req, res, next) => {
     });
 
     // Configurar la cookie con el token
-    const isProduction = process.env.NODE_ENV === "production";
+    // Railway usa proxy HTTPS → detectar por x-forwarded-proto en vez de NODE_ENV
+    const isHttps = req.secure || req.headers["x-forwarded-proto"] === "https";
     res.cookie("tokenMOTORHOURS", token, {
       httpOnly: true,
-      secure: isProduction,           // HTTPS requerido para SameSite=None
-      sameSite: isProduction ? "None" : "Lax", // None permite envío cross-origin (Vercel→Railway)
-      maxAge: 60 * 60 * 24 * 1000,   // 24 horas
+      secure: isHttps,
+      sameSite: isHttps ? "None" : "Lax", // None = permite envío cross-origin (Vercel→Railway)
+      maxAge: 60 * 60 * 24 * 1000,        // 24 horas
     });
 
     // Retornar la respuesta JSON sin el token

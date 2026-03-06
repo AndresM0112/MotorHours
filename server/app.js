@@ -18,6 +18,9 @@ import { startAllCrons } from "./src/tasks/main.tasks.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
+// Confiar en el proxy de Railway/Vercel para detectar HTTPS correctamente
+app.set("trust proxy", 1);
+
 // Testear conexión a la DB
 testConnection();
 
