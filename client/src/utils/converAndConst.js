@@ -10,7 +10,7 @@ export const nameSystem = "Gestión de tickets";
 
 export const urlLogo = `${process.env.PUBLIC_URL}/images/logos/lamayoristanew.jpg`;
 
-export const ruta = process.env.NODE_ENV === "development" ? "" : "/lamayoristanew/";
+export const ruta = process.env.NODE_ENV === "development" ? "" : "/";
 
 export const getInitials = (fullName) => {
     if (!fullName) return "";
@@ -23,15 +23,11 @@ export const getInitials = (fullName) => {
 export const urlSocket =
     process.env.NODE_ENV === "development"
         ? "http://localhost:3000/"
-        : "https://pavastecnologia.com/";
+        : (process.env.REACT_APP_API_URL || "https://motor-hours-production.up.railway.app") + "/";
 
-export const ticketPreviewURL =
-    process.env.NODE_ENV === "development" 
-    ? "/api/tickets/thumb/" : 
-    "/lamayoristanew/api/tickets/thumb/";
+export const ticketPreviewURL = "/api/tickets/thumb/";
 
-export const pathSocket =
-    process.env.NODE_ENV === "development" ? "/socket.io/" : "/lamayoristanew/socket.io/";
+export const pathSocket = "/socket.io/";
 
 export const msnDatosObligatorios = "Hay información obligatoria por ingresar. Verificar";
 
@@ -57,7 +53,7 @@ export const daysOfWeek = [
 export const urlbase =
     process.env.NODE_ENV === "development"
         ? "http://localhost:5042/"
-        : "https://pavastecnologia.com/lamayoristanew/";
+        : (process.env.REACT_APP_API_URL || "https://motor-hours-production.up.railway.app") + "/";
 
 export const estados = [
     { nombre: "Activo", id: 1 },
