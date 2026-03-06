@@ -96,11 +96,12 @@ export const loginController = async (req, res, next) => {
     });
 
     // Configurar la cookie con el token
+    const isProduction = process.env.NODE_ENV === "production";
     res.cookie("tokenMOTORHOURS", token, {
-      httpOnly: true, // La cookie no es accesible desde JavaScript
-      secure: process.env.NODE_ENV === "production" || false, // En producción, la cookie solo se envía a través de HTTPS
-      sameSite: "Strict", // Protege contra ataques CSRF
-      maxAge: 60 * 60 * 24 * 1000, // 24 horas en milisegundos
+      httpOnly: true,
+      secure: isProduction,           // HTTPS requerido para SameSite=None
+      sameSite: isProduction ? "None" : "Lax", // None permite envío cross-origin (Vercel→Railway)
+      maxAge: 60 * 60 * 24 * 1000,   // 24 horas
     });
 
     // Retornar la respuesta JSON sin el token
