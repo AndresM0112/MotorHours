@@ -7,14 +7,7 @@ export const savePiloto = async (data, connection = null) => {
   let conn = connection,
     release = false;
 
-  const {
-    id = 0,                // id del piloto (0 = nuevo)
-    name,                  // nombre del piloto
-    phone,                 // teléfono
-    email,                 // correo
-    // Datos de la moto asociada
-    moto = {},
-  } = data;
+  const {id = 0, name, phone, email, moto = {},} = data;
 
   try {
     if (!conn) {
@@ -46,13 +39,13 @@ export const savePiloto = async (data, connection = null) => {
         SET ? 
         WHERE id = ?
         `,
-        [pilotPayload, id]
+        [pilotPayload, id],
       );
     } else {
       // INSERT piloto
       const [ins] = await conn.query(
         `INSERT INTO tbl_pilots SET ?`,
-        pilotPayload
+        pilotPayload,
       );
       newPilotoId = ins.insertId;
     }
@@ -80,14 +73,15 @@ export const savePiloto = async (data, connection = null) => {
           SET ? 
           WHERE id = ? AND pilot_id = ?
           `,
-          [motoPayload, motoId, newPilotoId]
+          [motoPayload, motoId, newPilotoId],
         );
+        
         newMotoId = motoId;
       } else {
         // INSERT moto
         const [ins] = await conn.query(
           `INSERT INTO tbl_motos SET ?`,
-          motoPayload
+          motoPayload,
         );
         newMotoId = ins.insertId;
       }
@@ -134,7 +128,7 @@ export const getPilotos = async (filters = {}, connection = null) => {
 
     // Agrupar motos por piloto
     const pilotos = {};
-    rows.forEach(row => {
+    rows.forEach((row) => {
       if (!pilotos[row.id]) {
         pilotos[row.id] = {
           id: row.id,
@@ -142,13 +136,13 @@ export const getPilotos = async (filters = {}, connection = null) => {
           phone: row.phone,
           email: row.email,
           createdAt: row.createdAt,
-          motos: []
+          motos: [],
         };
       }
       if (row.motoId) {
         pilotos[row.id].motos.push({
           id: row.motoId,
-          type: row.motoType
+          type: row.motoType,
         });
       }
     });
@@ -183,7 +177,7 @@ export const getPilotoById = async (id, connection = null) => {
       LEFT JOIN tbl_motos m ON m.pilot_id = p.id
       WHERE p.id = ?
       `,
-      [id]
+      [id],
     );
 
     if (!rows.length) {
@@ -226,17 +220,14 @@ export const deletePiloto = async (id, connection = null) => {
     // Validar que el piloto existe
     const [pilotoExists] = await conn.query(
       `SELECT id FROM tbl_pilots WHERE id = ?`,
-      [id]
+      [id],
     );
     if (!pilotoExists.length) {
       throw new Error("El piloto no existe");
     }
 
     // Las motos se eliminarán automáticamente por FK CASCADE
-    await conn.query(
-      `DELETE FROM tbl_pilots WHERE id = ?`,
-      [id]
-    );
+    await conn.query(`DELETE FROM tbl_pilots WHERE id = ?`, [id]);
 
     await conn.commit();
 
@@ -352,7 +343,7 @@ export const paginatePilotos = async (params, connection = null) => {
 
     // Agrupar motos por piloto
     const pilotosMap = {};
-    allRows.forEach(row => {
+    allRows.forEach((row) => {
       if (!pilotosMap[row.id]) {
         pilotosMap[row.id] = {
           id: row.id,
@@ -360,19 +351,19 @@ export const paginatePilotos = async (params, connection = null) => {
           phone: row.phone,
           email: row.email,
           createdAt: row.createdAt,
-          motos: []
+          motos: [],
         };
       }
       if (row.motoId) {
         pilotosMap[row.id].motos.push({
           id: row.motoId,
-          type: row.motoType
+          type: row.motoType,
         });
       }
     });
 
     const allPilotos = Object.values(pilotosMap);
-    
+
     // Aplicar paginación después de agrupar
     const startIndex = Number(first);
     const endIndex = startIndex + Number(rows);
@@ -422,7 +413,7 @@ export const getPilotosDropdown = async (connection = null, filters = {}) => {
 
     // Agrupar motos por piloto
     const pilotos = {};
-    rows.forEach(row => {
+    rows.forEach((row) => {
       if (!pilotos[row.id]) {
         pilotos[row.id] = {
           id: row.id,
@@ -430,13 +421,13 @@ export const getPilotosDropdown = async (connection = null, filters = {}) => {
           phone: row.phone,
           email: row.email,
           createdAt: row.createdAt,
-          motos: []
+          motos: [],
         };
       }
       if (row.motoId) {
         pilotos[row.id].motos.push({
           id: row.motoId,
-          type: row.motoType
+          type: row.motoType,
         });
       }
     });
