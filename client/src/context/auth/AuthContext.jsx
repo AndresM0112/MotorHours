@@ -73,14 +73,11 @@ export const AuthProvider = ({ children }) => {
             } catch (error) {
                 console.log({ error });
 
-                // Solo cerrar sesión si el servidor respondió 401 explícitamente
-                // No cerrar sesión por errores de red/timeout (ej: pull-to-refresh mobile)
-                if (error?.response?.status === 401) {
-                    timeoutId = setTimeout(() => {
-                        logout();
-                        setVisible(false);
-                    }, 1000);
-                }
+                timeoutId = setTimeout(() => {
+                    alert("ALERTA DE CIERRE DE SESION");
+                    logout();
+                    setVisible(false);
+                }, 5000);
             }
         };
 
@@ -181,19 +178,18 @@ export const AuthProvider = ({ children }) => {
                 payload: { ...data, autentificado: true, usuFoto },
             });
 
-            const cookieOpts = { expires: 1 }; // 1 día — sobrevive pull-to-refresh en mobile
-            Cookies.set("idMOTORHOURS", usuId, cookieOpts);
-            Cookies.set("usuarioMOTORHOURS", nombre, cookieOpts);
+            Cookies.set("idMOTORHOURS", usuId);
+            Cookies.set("usuarioMOTORHOURS", nombre);
             localStorage.setItem("usuFoto", usuFoto);
-            Cookies.set("usuario", usuario, cookieOpts);
-            Cookies.set("correoMOTORHOURS", correo, cookieOpts);
-            Cookies.set("telefonoMOTORHOURS", telefono, cookieOpts);
-            Cookies.set("documentoMOTORHOURS", documento, cookieOpts);
-            Cookies.set("perfilMOTORHOURS", perfil, cookieOpts);
-            Cookies.set("tokenMOTORHOURS", token, cookieOpts);
-            Cookies.set("autentificadoMOTORHOURS", true, cookieOpts);
-            Cookies.set("permisosMOTORHOURS", JSON.stringify(permisos), cookieOpts);
-            Cookies.set("ventanasMOTORHOURS", JSON.stringify(ventanas), cookieOpts);
+            Cookies.set("usuario", usuario);
+            Cookies.set("correoMOTORHOURS", correo);
+            Cookies.set("telefonoMOTORHOURS", telefono);
+            Cookies.set("documentoMOTORHOURS", documento);
+            Cookies.set("perfilMOTORHOURS", perfil);
+            Cookies.set("tokenMOTORHOURS", token);
+            Cookies.set("autentificadoMOTORHOURS", true);
+            Cookies.set("permisosMOTORHOURS", JSON.stringify(permisos));
+            Cookies.set("ventanasMOTORHOURS", JSON.stringify(ventanas));
             localStorage.setItem("cambioclave", cambioclave);
 
             return data;
