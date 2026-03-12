@@ -73,11 +73,16 @@ export const AuthProvider = ({ children }) => {
             } catch (error) {
                 console.log({ error });
 
-                timeoutId = setTimeout(() => {
-                    alert("ALERTA DE CIERRE DE SESION");
-                    logout();
-                    setVisible(false);
-                }, 5000);
+                // Solo cerrar sesión si el servidor responde con 401/403 (token inválido o expirado).
+                // Errores de red o de request cancelado (sin error.response) ocurren en mobile
+                // al hacer pull-to-refresh y NO deben cerrar la sesión.
+                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                    timeoutId = setTimeout(() => {
+                        alert("ALERTA DE CIERRE DE SESION");
+                        logout();
+                        setVisible(false);
+                    }, 5000);
+                }
             }
         };
 
