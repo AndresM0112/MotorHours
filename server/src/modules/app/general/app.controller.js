@@ -70,7 +70,12 @@ export const getProfilesController = async (_, res, next) => {
 };
 
 export const verifyTokenController = async (req, res, next) => {
-  const token = req.cookies.tokenMOTORHOURS;
+  // Primero intenta la cookie (same-origin / desktop).
+  // En mobile Safari las cookies cross-origin son bloqueadas (ITP),
+  // así que se usa el header Authorization como fallback.
+  const token =
+    req.cookies.tokenMOTORHOURS ||
+    req.headers.authorization?.replace("Bearer ", "").trim();
 
   if (!token) {
     return res.status(401).json({ message: "Autorización inválida" });
