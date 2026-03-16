@@ -16,6 +16,9 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 // API
 import { paginatePilotosAPI, deletePilotoAPI } from "@api/requests/pilotosAPI";
 
+// Utils
+import { formatNotificationDateTime } from "@utils/formatTime";
+
 // Context & Hooks
 import { ToastContext } from "@context/toast/ToastContext";
 import useHandleApiError from "@hook/useHandleApiError";
@@ -283,6 +286,7 @@ const Pilotos = () => {
       field: "createdAt",
       header: "Fecha Registro",
       style: { minWidth: "12rem" },
+      body: ({ createdAt }) => formatNotificationDateTime(createdAt) || "—",
       mobile: false,
     },
   ];
@@ -368,13 +372,7 @@ const Pilotos = () => {
           </div>
         )}
 
-        {/* Fecha */}
-        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-          <i className="pi pi-calendar" style={{ fontSize: 11, color: "#9ca3af" }}></i>
-          <span style={{ fontSize: 12, color: "#6b7280" }}>
-            {item.createdAt ? String(item.createdAt) : "—"}
-          </span>
-        </div>
+
       </div>
     );
   };
@@ -480,6 +478,20 @@ const Pilotos = () => {
                     onCardClick={(event) => venPilotos.current?.viewPiloto(event.value)}
                     headerTemplate={headerCardTemplate}
                     bodyTemplate={bodyCardTemplate}
+                    footerTemplate={(item) => (
+                      <div className="card-footer">
+                        <div className="footer-left">
+                          <span className="footer-text">
+                            <strong>{item.updatedBy ?? "—"}</strong>
+                            <br />
+                            {item.updatedAt
+                              ? formatNotificationDateTime(item.updatedAt)
+                              : formatNotificationDateTime(item.createdAt)}
+                          </span>
+                        </div>
+                        <div className="footer-right">{renderActions(item)}</div>
+                      </div>
+                    )}
                   />
                 )}
               </>

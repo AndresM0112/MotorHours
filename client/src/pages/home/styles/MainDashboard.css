@@ -76,7 +76,19 @@
 /* Grid del contenido principal */
 .dashboard-content {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.dashboard-col-main {
+  grid-row: 1;
+}
+
+.dashboard-col-side {
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
@@ -195,6 +207,41 @@
   font-size: 12px;
 }
 
+/* Servicios chart wrapper */
+.status-chart-wrapper {
+  margin: 0 auto;
+  max-width: 300px;
+}
+
+.status-legend-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+
+.status-legend-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  flex: 1;
+}
+
+.status-legend-num {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.status-legend-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
 /* Servicios populares */
 .servicios-chart {
   display: flex;
@@ -276,6 +323,11 @@
   
   .dashboard-content {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-col-main,
+  .dashboard-col-side {
+    grid-row: auto;
   }
   
   .stat-card {

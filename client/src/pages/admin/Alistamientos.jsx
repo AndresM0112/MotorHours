@@ -16,6 +16,9 @@ import { Chip } from "primereact/chip";
 // API
 import { paginateAlistamientosAPI, deleteAlistamientoAPI } from "@api/requests/AlistamientoAPI";
 
+// Utils
+import { formatNotificationDateTime } from "@utils/formatTime";
+
 // Context & Hooks
 import { ToastContext } from "@context/toast/ToastContext";
 import { useMediaQueryContext } from "@context/mediaQuery/mediaQueryContext";
@@ -288,6 +291,7 @@ const Alistamientos = () => {
       field: "createdAt",
       header: "Fecha Registro",
       style: { minWidth: "12rem" },
+      body: ({ createdAt }) => formatNotificationDateTime(createdAt) || "—",
       mobile: true,
     },
   ];
@@ -337,14 +341,6 @@ const Alistamientos = () => {
     <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
       {/* Separador */}
       <div style={{ height: 1, background: "#f3f4f6", margin: "6px 0 10px" }} />
-
-      {/* Fecha */}
-      <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-        <i className="pi pi-calendar" style={{ fontSize: 11, color: "#9ca3af" }}></i>
-        <span style={{ fontSize: 12, color: "#6b7280" }}>
-          {item.createdAt ? String(item.createdAt) : "—"}
-        </span>
-      </div>
     </div>
   );
 
@@ -447,6 +443,20 @@ const Alistamientos = () => {
                     onCardClick={(event) => venAlistamiento.current?.viewAlistamiento(event.value)}
                     headerTemplate={headerCardTemplate}
                     bodyTemplate={bodyCardTemplate}
+                    footerTemplate={(item) => (
+                      <div className="card-footer">
+                        <div className="footer-left">
+                          <span className="footer-text">
+                            <strong>{item.updatedBy ?? "—"}</strong>
+                            <br />
+                            {item.updatedAt
+                              ? formatNotificationDateTime(item.updatedAt)
+                              : formatNotificationDateTime(item.createdAt)}
+                          </span>
+                        </div>
+                        <div className="footer-right">{renderActions(item)}</div>
+                      </div>
+                    )}
                   />
                 )}
               </>

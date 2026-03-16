@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { useHistory } from "react-router-dom";
+import ReactApexChart from "react-apexcharts";
 import { getAllPilotosAPI } from "../../api/requests/pilotosAPI";
 import { getAllServiciosAPI } from "../../api/requests/ServiciosAPI";
 import { getAllAlistamientosAPI } from "../../api/requests/AlistamientoAPI";
@@ -23,6 +24,7 @@ const MainDashboard = () => {
         totalServicios: 0
     });
     const [serviciosRecientes, setServiciosRecientes] = useState([]);
+    const [serviciosPorEstado, setServiciosPorEstado] = useState({ OPEN: 0, IN_PROGRESS: 0, CLOSED: 0 });
     const [alistamientosMasSolicitados, setAlistamientosMasSolicitados] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -55,7 +57,7 @@ const MainDashboard = () => {
                 // Procesar servicios recientes (últimos 5)
                 const servicios = serviciosResponse?.data || [];
                 const serviciosFormateados = servicios
-                    .slice(0, 5) // Tomar solo los primeros 5 (ya vienen ordenados por fecha desc)
+                    .slice(0, 3) // Tomar solo los primeros 3 (ya vienen ordenados por fecha desc)
                     .map(servicio => ({
                         id: servicio.id,
                         tipo: servicio.serviceType === 'ALISTAMIENTO' ? 'Alistamiento' : 'Reparación',
@@ -68,6 +70,14 @@ const MainDashboard = () => {
                     }));
                 
                 setServiciosRecientes(serviciosFormateados);
+
+                // Contar servicios por estado
+                const porEstado = { OPEN: 0, IN_PROGRESS: 0, CLOSED: 0 };
+                servicios.forEach(s => {
+                    const code = s.statusCode || "OPEN";
+                    if (porEstado[code] !== undefined) porEstado[code]++;
+                });
+                setServiciosPorEstado(porEstado);
 
                 // Procesar alistamientos más solicitados
                 const alistamientos = alistamientosResponse?.data || [];
@@ -182,10 +192,75 @@ const MainDashboard = () => {
 
                 {/* Grid de contenido principal */}
                 <div className="dashboard-content">
-                    
-                    {/* Servicios Recientes */}
-                    <Card title="🔄 Servicios Recientes" className="dashboard-card">
-                        <div className="servicios-recientes-list">
+
+                    {/* Columna izquierda: Servicios (ocupa 2 filas) */}
+                    <div className="dashboard-col-main">
+                    {/* Servicios Recientes + Gráfico por Estado */}
+                    <Card title="🔄 Servicios" className="dashboard-card">
+
+                        {/* Gráfico donut por estado */}
+                        <div className="status-chart-wrapper">
+                            {loading ? (
+                                <div className="text-center p-3">
+                                    <i className="pi pi-spin pi-spinner" style={{ fontSize: '1.5rem' }}></i>
+                                </div>
+                            ) : (
+                                <ReactApexChart
+                                    type="donut"
+                                    height={220}
+                                    series={[
+                                        serviciosPorEstado.OPEN,
+                                        serviciosPorEstado.IN_PROGRESS,
+                                        serviciosPorEstado.CLOSED,
+                                    ]}
+                                    options={{
+                                        labels: ["Abierto", "En proceso", "Cerrado"],
+                                        colors: ["#3b82f6", "#f97316", "#22c55e"],
+                                        legend: { position: "bottom", fontSize: "12px" },
+                                        dataLabels: { enabled: true },
+                                        plotOptions: {
+                                            pie: {
+                                                donut: {
+                                                    size: "65%",
+                                                    labels: {
+                                                        show: true,
+                                                        total: {
+                                                            show: true,
+                                                            label: "Total",
+                                                            fontSize: "13px",
+                                                            fontWeight: 600,
+                                                            color: "#374151",
+                                                            formatter: (w) =>
+                                                                w.globals.seriesTotals.reduce((a, b) => a + b, 0),
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                        tooltip: { y: { formatter: (v) => `${v} servicio(s)` } },
+                                        noData: { text: "Sin datos" },
+                                    }}
+                                />
+                            )}
+                        </div>
+
+                        <div className="status-legend-row">
+                            <div className="status-legend-item" style={{ borderLeft: "3px solid #3b82f6" }}>
+                                <span className="status-legend-num">{serviciosPorEstado.OPEN}</span>
+                                <span className="status-legend-label">Abiertos</span>
+                            </div>
+                            <div className="status-legend-item" style={{ borderLeft: "3px solid #f97316" }}>
+                                <span className="status-legend-num">{serviciosPorEstado.IN_PROGRESS}</span>
+                                <span className="status-legend-label">En proceso</span>
+                            </div>
+                            <div className="status-legend-item" style={{ borderLeft: "3px solid #22c55e" }}>
+                                <span className="status-legend-num">{serviciosPorEstado.CLOSED}</span>
+                                <span className="status-legend-label">Cerrados</span>
+                            </div>
+                        </div>
+
+                        {/* Lista de recientes */}
+                        <div className="servicios-recientes-list mt-3">
                             {loading ? (
                                 <div className="text-center p-4">
                                     <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
@@ -233,7 +308,6 @@ const MainDashboard = () => {
                                                 <Button 
                                                     icon="pi pi-eye" 
                                                     className="p-button-text p-button-rounded p-button-sm"
-                                                    // tooltip="Ver detalles"
                                                     tooltipOptions={{ position: 'top' }}
                                                     onClick={() => servicioModalRef.current?.viewServicio(servicio._raw)}
                                                 />
@@ -254,8 +328,10 @@ const MainDashboard = () => {
                             onClick={handleNavigateToServicios}
                         />
                     </Card>
+                    </div>{/* fin columna izquierda */}
 
-                    {/* Alistamientos más solicitados */}
+                    {/* Columna derecha: Alistamientos + Acciones rápidas */}
+                    <div className="dashboard-col-side">
                     <Card title="🔧 Alistamientos Más Solicitados" className="dashboard-card">
                         <div className="servicios-chart">
                             {loading ? (
@@ -316,6 +392,8 @@ const MainDashboard = () => {
                             />
                         </div>
                     </Card>
+
+                    </div>{/* fin columna derecha */}
 
                 </div>
             </Card>

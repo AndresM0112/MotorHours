@@ -7,7 +7,7 @@ export const savePiloto = async (data, connection = null) => {
   let conn = connection,
     release = false;
 
-  const {id = 0, name, phone, email, moto = {},} = data;
+  const {id = 0, name, phone, email, moto = {}, updatedBy = null} = data;
 
   try {
     if (!conn) {
@@ -39,13 +39,13 @@ export const savePiloto = async (data, connection = null) => {
         SET ? 
         WHERE id = ?
         `,
-        [pilotPayload, id],
+        [{ ...pilotPayload, updated_at: new Date(), updated_by: updatedBy }, id],
       );
     } else {
       // INSERT piloto
       const [ins] = await conn.query(
         `INSERT INTO tbl_pilots SET ?`,
-        pilotPayload,
+        { ...pilotPayload, updated_by: updatedBy },
       );
       newPilotoId = ins.insertId;
     }
@@ -118,7 +118,9 @@ export const getPilotos = async (filters = {}, connection = null) => {
         p.name,
         p.phone,
         p.email,
-        p.created_at AS createdAt,
+        p.created_at  AS createdAt,
+        p.updated_at  AS updatedAt,
+        p.updated_by  AS updatedBy,
         m.id AS motoId,
         m.type AS motoType
       FROM tbl_pilots p
@@ -136,6 +138,8 @@ export const getPilotos = async (filters = {}, connection = null) => {
           phone: row.phone,
           email: row.email,
           createdAt: row.createdAt,
+          updatedAt: row.updatedAt,
+          updatedBy: row.updatedBy,
           motos: [],
         };
       }
@@ -170,7 +174,9 @@ export const getPilotoById = async (id, connection = null) => {
         p.name,
         p.phone,
         p.email,
-        p.created_at AS createdAt,
+        p.created_at  AS createdAt,
+        p.updated_at  AS updatedAt,
+        p.updated_by  AS updatedBy,
         m.id AS motoId,
         m.type AS motoType
       FROM tbl_pilots p
@@ -191,6 +197,8 @@ export const getPilotoById = async (id, connection = null) => {
       phone: rows[0].phone,
       email: rows[0].email,
       createdAt: rows[0].createdAt,
+      updatedAt: rows[0].updatedAt,
+      updatedBy: rows[0].updatedBy,
       motos: rows
         .filter((r) => r.motoId)
         .map((r) => ({
@@ -331,6 +339,8 @@ export const paginatePilotos = async (params, connection = null) => {
         p.phone              AS phone,
         p.email              AS email,
         p.created_at         AS createdAt,
+        p.updated_at         AS updatedAt,
+        p.updated_by         AS updatedBy,
         m.id                 AS motoId,
         m.type               AS motoType
       FROM tbl_pilots p
@@ -351,6 +361,8 @@ export const paginatePilotos = async (params, connection = null) => {
           phone: row.phone,
           email: row.email,
           createdAt: row.createdAt,
+          updatedAt: row.updatedAt,
+          updatedBy: row.updatedBy,
           motos: [],
         };
       }

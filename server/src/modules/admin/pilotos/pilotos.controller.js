@@ -60,6 +60,8 @@ export const save = async (req, res) => {
       body.id = Number(req.params.id);
     }
 
+    body.updatedBy = req.user?.nombre ?? null;
+
     const result = await savePiloto(body);
     res.status(200).json(result);
   } catch (err) {

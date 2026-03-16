@@ -238,7 +238,7 @@ const Servicios = () => {
         label: "Editar", 
         icon: "pi pi-pencil",
         command: () => venServicios.current?.editServicio(item),
-        visible: canEdit,
+        visible: canEdit && item.statusCode !== "CLOSED",
       },
       {
         label: "Cambiar Estado",

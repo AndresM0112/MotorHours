@@ -11,6 +11,7 @@ export const saveAlistamiento = async (data, connection = null) => {
     id = 0,                // id del alistamiento (0 = nuevo)
     description,           // descripción de la tarea
     active = 1,            // estado (1 = activo, 0 = inactivo)
+    updatedBy = null,      // nombre del usuario que crea o actualiza
   } = data;
 
   try {
@@ -42,13 +43,13 @@ export const saveAlistamiento = async (data, connection = null) => {
         SET ? 
         WHERE id = ?
         `,
-        [payload, id]
+        [{ ...payload, updated_at: new Date(), updated_by: updatedBy }, id]
       );
     } else {
       // INSERT
       const [ins] = await conn.query(
         `INSERT INTO tbl_alistamiento_tasks SET ?`,
-        payload
+        { ...payload, updated_by: updatedBy }
       );
       newId = ins.insertId;
     }
@@ -84,7 +85,9 @@ export const getAlistamientos = async (filters = {}, connection = null) => {
         id,
         description,
         active,
-        created_at AS createdAt
+        created_at  AS createdAt,
+        updated_at  AS updatedAt,
+        updated_by  AS updatedBy
       FROM tbl_alistamiento_tasks
       WHERE 1=1
     `;
@@ -120,7 +123,9 @@ export const getAlistamientoById = async (id, connection = null) => {
         id,
         description,
         active,
-        created_at AS createdAt
+        created_at  AS createdAt,
+        updated_at  AS updatedAt,
+        updated_by  AS updatedBy
       FROM tbl_alistamiento_tasks
       WHERE id = ?
       `,
@@ -244,8 +249,9 @@ export const paginateAlistamientos = async (params, connection = null) => {
         id,
         description,
         active,
-        created_at AS createdAt
-
+        created_at  AS createdAt,
+        updated_at  AS updatedAt,
+        updated_by  AS updatedBy
       FROM tbl_alistamiento_tasks
       ${whereSql}
       ORDER BY ${sortColumn} ${order}
@@ -288,7 +294,9 @@ export const getAlistamientosDropdown = async (connection = null, filters = {}) 
         id,
         description AS label,
         active,
-        created_at AS createdAt
+        created_at  AS createdAt,
+        updated_at  AS updatedAt,
+        updated_by  AS updatedBy
       FROM tbl_alistamiento_tasks
       WHERE 1=1
     `;
