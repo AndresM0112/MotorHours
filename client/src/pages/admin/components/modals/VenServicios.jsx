@@ -186,6 +186,7 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
     const [loading, setLoading] = useState(false);
     const [pilotos, setPilotos] = useState([]);
     const [alistamientos, setAlistamientos] = useState([]);
+    const [currentItem, setCurrentItem] = useState(null);
 
     const { showSuccess } = useContext(ToastContext);
     const handleApiError = useHandleApiError();
@@ -234,6 +235,7 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
         newServicio: () => {
             setMode("new");
             setServicioId(null);
+            setCurrentItem(null);
             reset(defaultValues);
             fetchDropdowns();
             setVisible(true);
@@ -241,6 +243,7 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
         editServicio: (row) => {
             setMode("edit");
             setServicioId(row?.id || null);
+            setCurrentItem(row);
             
             // Mapear correctamente los datos del backend
             const resetData = {
@@ -337,9 +340,11 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
                 };
             });
 
+            const isEdit = Boolean(servicioId);
             const row = {
                 id: servicioId || data.id,
                 pilotoId: values.pilotoId,
+                pilotId: values.pilotoId,
                 pilotName: selectedPiloto?.name || "Sin piloto",
                 hours: payload.moto_hours,
                 serviceType: payload.service_type,
@@ -351,7 +356,13 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
                     notes: item.observaciones || "",
                     description: item.description
                 })),
-                createdAt: data.createdAt || new Date().toISOString(),
+                createdAt: isEdit
+                    ? (currentItem?.createdAt ?? new Date().toISOString())
+                    : (data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString()),
+                statusCode: isEdit ? (currentItem?.statusCode ?? "OPEN") : "OPEN",
+                statusName: isEdit ? (currentItem?.statusName ?? "Abierto") : "Abierto",
+                updatedBy: data.updatedBy || null,
+                updatedAt: data.updatedAt ? new Date(data.updatedAt).toISOString() : null,
             };
 
             if (servicioId) {

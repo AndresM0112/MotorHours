@@ -100,9 +100,13 @@ export const saveServicio = async (data, connection = null) => {
 
     await conn.commit();
 
+    const now = new Date();
     return {
       message: "Servicio guardado correctamente",
       id: newServicioId,
+      updatedBy: updatedBy,
+      updatedAt: id > 0 ? now : null,
+      createdAt: id > 0 ? null : now,
     };
   } catch (err) {
     if (conn) await conn.rollback();
