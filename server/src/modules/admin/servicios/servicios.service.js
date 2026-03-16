@@ -13,6 +13,7 @@ export const saveServicio = async (data, connection = null) => {
     service_type,            // 'ALISTAMIENTO' o 'REPARACION'
     moto_hours,              // horas de servicio
     alistamiento_items = [], // items de alistamiento (solo para ALISTAMIENTO)
+    updatedBy = null,        // nombre del usuario que actualiza
   } = data;
 
   try {
@@ -57,7 +58,7 @@ export const saveServicio = async (data, connection = null) => {
       // UPDATE servicio
       await conn.query(
         `UPDATE tbl_services SET ? WHERE id = ?`,
-        [servicioPayload, id]
+        [{ ...servicioPayload, updated_at: new Date(), updated_by: updatedBy }, id]
       );
       
       // Eliminar items de alistamiento previos para actualizar
@@ -71,7 +72,7 @@ export const saveServicio = async (data, connection = null) => {
       // INSERT servicio
       const [ins] = await conn.query(
         `INSERT INTO tbl_services SET ?`,
-        servicioPayload
+        { ...servicioPayload, updated_by: updatedBy }
       );
       newServicioId = ins.insertId;
     }
@@ -127,6 +128,9 @@ export const getServicios = async (filters = {}, connection = null) => {
         s.moto_id AS bikeId,
         s.service_type AS serviceType,
         s.moto_hours AS hours,
+        s.status_id AS statusId,
+        ss.code AS statusCode,
+        ss.name AS statusName,
         s.created_at AS createdAt,
         m.type AS bikeType,
         m.pilot_id AS pilotId,
@@ -134,6 +138,7 @@ export const getServicios = async (filters = {}, connection = null) => {
       FROM tbl_services s
       LEFT JOIN tbl_motos m ON m.id = s.moto_id
       LEFT JOIN tbl_pilots p ON p.id = m.pilot_id
+      LEFT JOIN service_status ss ON ss.id = s.status_id
       ORDER BY s.created_at DESC
     `;
 
@@ -191,6 +196,9 @@ export const getServicioById = async (id, connection = null) => {
         s.moto_id AS bikeId,
         s.service_type AS serviceType,
         s.moto_hours AS hours,
+        s.status_id AS statusId,
+        ss.code AS statusCode,
+        ss.name AS statusName,
         s.created_at AS createdAt,
         m.type AS bikeType,
         m.pilot_id AS pilotId,
@@ -198,6 +206,7 @@ export const getServicioById = async (id, connection = null) => {
       FROM tbl_services s
       LEFT JOIN tbl_motos m ON m.id = s.moto_id
       LEFT JOIN tbl_pilots p ON p.id = m.pilot_id
+      LEFT JOIN service_status ss ON ss.id = s.status_id
       WHERE s.id = ?
       `,
       [id]
@@ -366,7 +375,12 @@ export const paginateServicios = async (params, connection = null) => {
         s.moto_id AS bikeId,
         s.service_type AS serviceType,
         s.moto_hours AS hours,
+        s.status_id AS statusId,
+        ss.code AS statusCode,
+        ss.name AS statusName,
         s.created_at AS createdAt,
+        s.updated_at AS updatedAt,
+        s.updated_by AS updatedBy,
         m.type AS bikeType,
         m.pilot_id AS pilotId,
         p.name AS pilotName
@@ -374,6 +388,7 @@ export const paginateServicios = async (params, connection = null) => {
       FROM tbl_services s
       LEFT JOIN tbl_motos m ON m.id = s.moto_id
       LEFT JOIN tbl_pilots p ON p.id = m.pilot_id
+      LEFT JOIN service_status ss ON ss.id = s.status_id
       ${whereSql}
       ORDER BY ${sortColumn} ${order}
       LIMIT ${Number(rows)} OFFSET ${Number(first)}
@@ -424,6 +439,141 @@ export const paginateServicios = async (params, connection = null) => {
       results: rowsData,
       total: count?.total || 0,
     };
+  } finally {
+    if (release) releaseConnection(conn);
+  }
+};
+
+export const changeServicioStatus = async (id, statusId, description, changedById, changedByName, connection = null) => {
+  let conn = connection,
+    release = false;
+
+  try {
+    if (!conn) {
+      conn = await getConnection();
+      release = true;
+    }
+
+    await conn.beginTransaction();
+
+    // Validaciones básicas
+    if (!id || Number(id) <= 0) {
+      throw new Error("El id del servicio es requerido");
+    }
+
+    if (!statusId || Number(statusId) <= 0) {
+      throw new Error("El estado es requerido");
+    }
+
+    if (!description || !String(description).trim()) {
+      throw new Error("La descripción del cambio de estado es obligatoria");
+    }
+
+    // 1. Obtener el servicio actual con su estado
+    const [serviceRows] = await conn.query(
+      `SELECT s.id, s.status_id, s.service_type, ss.code AS currentStatusCode
+       FROM tbl_services s
+       LEFT JOIN service_status ss ON ss.id = s.status_id
+       WHERE s.id = ?`,
+      [id]
+    );
+
+    if (!serviceRows.length) {
+      throw new Error("El servicio no existe");
+    }
+
+    const service = serviceRows[0];
+
+    // 2. Obtener el nuevo estado
+    const [newStatusRows] = await conn.query(
+      `SELECT id, code, name FROM service_status WHERE id = ?`,
+      [statusId]
+    );
+
+    if (!newStatusRows.length) {
+      throw new Error("El estado indicado no existe");
+    }
+
+    const newStatus = newStatusRows[0];
+
+    // 3. Validar que la transición sea permitida
+    const ALLOWED_TRANSITIONS = {
+      OPEN: ["IN_PROGRESS", "CLOSED"],
+      IN_PROGRESS: ["CLOSED"],
+      CLOSED: [],
+    };
+
+    const currentCode = service.currentStatusCode;
+    const allowedNext = ALLOWED_TRANSITIONS[currentCode] ?? [];
+
+    if (!allowedNext.includes(newStatus.code)) {
+      throw new Error(
+        `Transición no permitida: ${currentCode} → ${newStatus.code}`
+      );
+    }
+
+    // 4. Si el nuevo estado es CLOSED y el servicio es de tipo ALISTAMIENTO,
+    //    validar que todos los alistamientos estén respondidos correctamente
+    if (newStatus.code === "CLOSED" && service.service_type === "ALISTAMIENTO") {
+      // Verificar que todos los alistamientos del catálogo tienen respuesta en este servicio
+      const [[counts]] = await conn.query(
+        `SELECT
+          (SELECT COUNT(*) FROM tbl_service_alistamiento_tasks WHERE service_id = ?) AS answered,
+          (SELECT COUNT(*) FROM tbl_alistamiento_tasks) AS total`,
+        [id]
+      );
+
+      if (Number(counts.answered) < Number(counts.total)) {
+        throw new Error(
+          "Todos los alistamientos deben estar respondidos antes de cerrar el servicio"
+        );
+      }
+
+      // Verificar que los alistamientos marcados como NO tienen descripción
+      const [[noItems]] = await conn.query(
+        `SELECT COUNT(*) AS invalid
+         FROM tbl_service_alistamiento_tasks
+         WHERE service_id = ?
+           AND is_done = 0
+           AND (observations IS NULL OR TRIM(observations) = '')`,
+        [id]
+      );
+
+      if (Number(noItems.invalid) > 0) {
+        throw new Error(
+          "Todos los alistamientos marcados como NO deben tener una descripción obligatoria"
+        );
+      }
+    }
+
+    // 5. Actualizar el estado en tbl_services
+    await conn.query(
+      `UPDATE tbl_services SET status_id = ?, updated_at = NOW(), updated_by = ? WHERE id = ?`,
+      [Number(statusId), changedByName ?? null, Number(id)]
+    );
+
+    // 6. Registrar el cambio en el historial
+    await conn.query(
+      `INSERT INTO tbl_service_status_history SET ?`,
+      [{
+        service_id: Number(id),
+        previous_status_id: service.status_id,
+        new_status_id: Number(statusId),
+        description: String(description).trim(),
+        changed_by: changedById ?? null,
+      }]
+    );
+
+    await conn.commit();
+
+    return {
+      message: `Estado actualizado correctamente a ${newStatus.name}`,
+      previousStatusId: service.status_id,
+      newStatusId: Number(statusId),
+    };
+  } catch (err) {
+    if (conn) await conn.rollback();
+    throw err;
   } finally {
     if (release) releaseConnection(conn);
   }

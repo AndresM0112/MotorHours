@@ -35,8 +35,9 @@ app.use(cors({
   origin: (origin, callback) => {
     const allowed = (process.env.CORS_ORIGINS || "http://localhost:3000")
       .split(",")
-      .map((o) => o.trim());
-    if (!origin || allowed.includes(origin)) return callback(null, true);
+      .map((o) => o.trim().replace(/\/$/, ""));
+    const normalizedOrigin = origin ? origin.replace(/\/$/, "") : origin;
+    if (!normalizedOrigin || allowed.includes(normalizedOrigin)) return callback(null, true);
     callback(new Error(`CORS: origen no permitido → ${origin}`));
   },
   credentials: true,

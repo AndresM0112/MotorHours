@@ -4,7 +4,8 @@ import {
   paginateServicios,
   saveServicio,
   deleteServicio,
-  getServiciosDropdown
+  getServiciosDropdown,
+  changeServicioStatus,
 } from "./servicios.service.js";
 
 // GET /servicios
@@ -60,6 +61,8 @@ export const save = async (req, res) => {
       body.id = Number(req.params.id);
     }
 
+    body.updatedBy = req.user?.nombre ?? null;
+
     const result = await saveServicio(body);
     res.status(200).json(result);
   } catch (err) {
@@ -101,6 +104,28 @@ export const getDropdown = async (req, res) => {
     console.error("Error al obtener servicios para dropdown:", err);
     res.status(500).json({
       message: err?.message ?? "Error al obtener los servicios",
+      error: err.message,
+    });
+  }
+};
+
+// PUT /servicios/:id/status
+export const changeStatus = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { statusId, description } = req.body;
+    const changedById = req.user?.usuId ?? null;
+    const changedByName = req.user?.nombre ?? null;
+
+    if (!id || id <= 0) {
+      return res.status(400).json({ message: "ID de servicio inválido" });
+    }
+
+    const result = await changeServicioStatus(id, statusId, description, changedById, changedByName);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(400).json({
+      message: err?.message ?? "Error al cambiar el estado del servicio",
       error: err.message,
     });
   }

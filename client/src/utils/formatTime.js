@@ -95,6 +95,6 @@ export const formatNotificationDateTime = (dateString) => {
         return `${datePart} ${timePart}`;
     }
 
-    const timePart = format(date, "p", { locale: es });
+    const timePart = format(date, "h:mm a", { locale: es });
     return `${datePart} ${timePart}`;
 };

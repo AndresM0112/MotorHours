@@ -2,7 +2,7 @@
     "name": "frontend-motorhours",
     "version": "1.0.0",
     "private": true,
-    "proxy": "https://motor-hours-production.up.railway.app",
+    "proxy": "http://localhost:5042",
     "homepage": ".",
     "license": "MIT",
     "dependencies": {

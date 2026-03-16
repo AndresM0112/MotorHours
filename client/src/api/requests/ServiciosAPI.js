@@ -53,3 +53,12 @@ export const deleteServicioAPI = (params) => {
       .catch((error) => reject(error));
   });
 };
+
+export const changeServicioStatusAPI = (id, params) => {
+  return new Promise((resolve, reject) => {
+    httpCliente
+      .put(`api/management/servicios/${id}/status`, params)
+      .then((response) => resolve(response))
+      .catch((error) => reject(error));
+  });
+};

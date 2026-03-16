@@ -12,9 +12,12 @@ import InfiniteScrollCards from "@components/ui/InfiniteScrollCards";
 import { Button } from "primereact/button";
 import { Chip } from "primereact/chip";
 import { ConfirmDialog } from "primereact/confirmdialog";
+import { Dialog } from "primereact/dialog";
+import { Dropdown } from "primereact/dropdown";
+import { InputTextarea } from "primereact/inputtextarea";
 
 // API
-import { paginateServiciosAPI, deleteServicioAPI } from "@api/requests/ServiciosAPI";
+import { paginateServiciosAPI, deleteServicioAPI, changeServicioStatusAPI } from "@api/requests/ServiciosAPI";
 
 // Context & Hooks
 import { ToastContext } from "@context/toast/ToastContext";
@@ -22,6 +25,7 @@ import useHandleApiError from "@hook/useHandleApiError";
 import useHandleData from "@hook/useHandleData";
 import usePaginationData from "@hook/usePaginationData";
 import { useMediaQueryContext } from "@context/mediaQuery/mediaQueryContext";
+import { formatNotificationDateTime } from "@utils/formatTime";
 
 // Lazy
 const LazyDataTable = React.lazy(() => import("@components/data/DataTableComponent"));
@@ -37,6 +41,24 @@ const OverlayFiltersMemo = React.memo(LazyOverlayFilters);
 const VenServicios = React.lazy(() => import("./components/modals/VenServicios"));
 
 const ACCENT = "#007e79";
+
+const SERVICE_STATUSES = [
+  { label: "Abierto",     value: 1, code: "OPEN" },
+  { label: "En proceso",  value: 2, code: "IN_PROGRESS" },
+  { label: "Cerrado",     value: 3, code: "CLOSED" },
+];
+
+const ALLOWED_TRANSITIONS = {
+  OPEN:        ["IN_PROGRESS", "CLOSED"],
+  IN_PROGRESS: ["CLOSED"],
+  CLOSED:      [],
+};
+
+const STATUS_STYLE = {
+  OPEN:        { bg: "#eff6ff", border: "#bfdbfe", color: "#1d4ed8" },
+  IN_PROGRESS: { bg: "#fff7ed", border: "#fed7aa", color: "#c2410c" },
+  CLOSED:      { bg: "#f0fdf4", border: "#bbf7d0", color: "#15803d" },
+};
 
 // Campos de filtros para Servicios
 const generateFiltersConfig = ({ filtros }) => [
@@ -90,6 +112,11 @@ const Servicios = () => {
   const [firstLoad, setFirstLoad] = useState(true);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const [currentServicio, setCurrentServicio] = useState(null);
+  const [statusDialogVisible, setStatusDialogVisible] = useState(false);
+  const [statusServicio, setStatusServicio] = useState(null);
+  const [statusForm, setStatusForm] = useState({ statusId: null, description: "" });
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [statusError, setStatusError] = useState(null);
 
   const initialFilters = useMemo(
     () => ({
@@ -143,6 +170,43 @@ const Servicios = () => {
 
   const activeFiltersCount = useMemo(() => getActiveFiltersCount(filtros), [filtros]);
 
+  // Cambiar estado del servicio
+  const changeStatusApi = useCallback(
+    async () => {
+      if (!statusServicio || !statusForm.statusId || !statusForm.description?.trim()) return;
+      setStatusLoading(true);
+      setStatusError(null);
+      try {
+        await changeServicioStatusAPI(statusServicio.id, {
+          statusId: statusForm.statusId,
+          description: statusForm.description.trim(),
+        });
+        showSuccess("Estado actualizado correctamente");
+        setStatusDialogVisible(false);
+        await reloadData();
+      } catch (error) {
+        const msg = error?.response?.data?.message ?? "Error al cambiar el estado";
+        setStatusError(msg);
+      } finally {
+        setStatusLoading(false);
+      }
+    },
+    [statusServicio, statusForm, showSuccess, reloadData]
+  );
+
+  const renderStatusChip = (statusCode, statusName) => {
+    const s = STATUS_STYLE[statusCode] || STATUS_STYLE.OPEN;
+    return (
+      <span style={{
+        background: s.bg, border: `1px solid ${s.border}`, color: s.color,
+        borderRadius: 12, padding: "3px 10px", fontSize: 12, fontWeight: 600,
+        whiteSpace: "nowrap",
+      }}>
+        {statusName || statusCode || "—"}
+      </span>
+    );
+  };
+
   // Eliminar servicio
   const deleteApi = useCallback(
     async (servicioId) => {
@@ -175,6 +239,16 @@ const Servicios = () => {
         icon: "pi pi-pencil",
         command: () => venServicios.current?.editServicio(item),
         visible: canEdit,
+      },
+      {
+        label: "Cambiar Estado",
+        icon: "pi pi-sync",
+        command: () => {
+          setStatusServicio(item);
+          setStatusForm({ statusId: null, description: "" });
+          setStatusDialogVisible(true);
+        },
+        visible: canEdit && item.statusCode !== "CLOSED",
       },
       {
         label: "Eliminar",
@@ -285,9 +359,17 @@ const Servicios = () => {
       mobile: true,
     },
     {
+      field: "statusCode",
+      header: "Estado",
+      style: { minWidth: "10rem" },
+      body: ({ statusCode, statusName }) => renderStatusChip(statusCode, statusName),
+      mobile: true,
+    },
+    {
       field: "createdAt",
       header: "Fecha Registro",
       style: { minWidth: "12rem" },
+      body: ({ createdAt }) => formatNotificationDateTime(createdAt) || "—",
       mobile: false,
     },
   ];
@@ -356,21 +438,24 @@ const Servicios = () => {
           </div>
         </div>
 
-        {/* Fila: fecha + items si es alistamiento */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        {/* Fila: estado + fecha */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+          {renderStatusChip(item.statusCode, item.statusName)}
           <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
             <i className="pi pi-calendar" style={{ fontSize: 11, color: "#9ca3af" }}></i>
             <span style={{ fontSize: 12, color: "#6b7280" }}>
-              {item.createdAt ? String(item.createdAt) : "—"}
+              {formatNotificationDateTime(item.createdAt) || "—"}
             </span>
           </div>
-          {isAlistamiento && itemsCount > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <i className="pi pi-list" style={{ fontSize: 11, color: "#6366f1" }}></i>
-              <span style={{ fontSize: 11, color: "#6366f1", fontWeight: 600 }}>{itemsCount} items</span>
-            </div>
-          )}
         </div>
+
+        {/* Fila: items alistamiento */}
+        {isAlistamiento && itemsCount > 0 && (
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <i className="pi pi-list" style={{ fontSize: 11, color: "#6366f1" }}></i>
+            <span style={{ fontSize: 11, color: "#6366f1", fontWeight: 600 }}>{itemsCount} items</span>
+          </div>
+        )}
       </div>
     );
   };
@@ -397,6 +482,87 @@ const Servicios = () => {
         header="Confirmación"
         icon="pi pi-exclamation-triangle"
       />
+
+      {/* Diálogo cambio de estado */}
+      <Dialog
+        visible={statusDialogVisible}
+        onHide={() => { setStatusDialogVisible(false); setStatusError(null); }}
+        header={
+          <div className="flex align-items-center gap-2">
+            <i className="pi pi-sync" style={{ color: ACCENT }} />
+            <span>Cambiar Estado — Servicio #{statusServicio?.id ?? ""}</span>
+          </div>
+        }
+        style={{ width: "440px" }}
+        modal
+        blockScroll
+      >
+        <div className="flex flex-column gap-3 pt-2">
+
+          {/* Estado actual */}
+          {statusServicio && (
+            <div className="flex align-items-center gap-2">
+              <span className="text-color-secondary text-sm">Estado actual:</span>
+              {renderStatusChip(statusServicio.statusCode, statusServicio.statusName)}
+            </div>
+          )}
+
+          <div>
+            <label className="font-semibold block mb-2">Nuevo Estado</label>
+            <Dropdown
+              value={statusForm.statusId}
+              onChange={(e) => { setStatusForm((prev) => ({ ...prev, statusId: e.value })); setStatusError(null); }}
+              options={SERVICE_STATUSES.filter((s) =>
+                (ALLOWED_TRANSITIONS[statusServicio?.statusCode] ?? []).includes(s.code)
+              )}
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Selecciona un estado"
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold block mb-2">
+              Motivo del cambio <span className="text-red-500">*</span>
+            </label>
+            <InputTextarea
+              value={statusForm.description}
+              onChange={(e) => { setStatusForm((prev) => ({ ...prev, description: e.target.value })); setStatusError(null); }}
+              placeholder="Ej: Se inicia diagnóstico del motor"
+              rows={3}
+              className="w-full"
+            />
+          </div>
+
+          {/* Mensaje de error inline */}
+          {statusError && (
+            <div
+              className="flex align-items-start gap-2 border-round p-3"
+              style={{ background: "#fef2f2", border: "1px solid #fecaca" }}
+            >
+              <i className="pi pi-times-circle mt-1" style={{ color: "#dc2626", flexShrink: 0 }} />
+              <span style={{ color: "#991b1b", fontSize: 13, lineHeight: 1.5 }}>{statusError}</span>
+            </div>
+          )}
+
+          <div className="flex justify-content-end gap-2 mt-1">
+            <Button
+              label="Cancelar"
+              className="p-button-text"
+              onClick={() => { setStatusDialogVisible(false); setStatusError(null); }}
+            />
+            <Button
+              label="Guardar"
+              icon="pi pi-save"
+              onClick={changeStatusApi}
+              loading={statusLoading}
+              disabled={statusLoading || !statusForm.statusId || !statusForm.description?.trim()}
+              className="p-button-success"
+            />
+          </div>
+        </div>
+      </Dialog>
 
       {/* Modal de registro */}
       <Suspense fallback={<div>Cargando modal...</div>}>
@@ -476,6 +642,20 @@ const Servicios = () => {
                     onCardClick={(event) => venServicios.current?.viewServicio(event.value)}
                     headerTemplate={headerCardTemplate}
                     bodyTemplate={bodyCardTemplate}
+                    footerTemplate={(item) => (
+                      <div className="card-footer">
+                        <div className="footer-left">
+                          <span className="footer-text">
+                            <strong>{item.updatedBy ?? "—"}</strong>
+                            <br />
+                            {item.updatedAt
+                              ? formatNotificationDateTime(item.updatedAt)
+                              : formatNotificationDateTime(item.createdAt)}
+                          </span>
+                        </div>
+                        <div className="footer-right">{renderActions(item)}</div>
+                      </div>
+                    )}
                   />
                 )}
               </>

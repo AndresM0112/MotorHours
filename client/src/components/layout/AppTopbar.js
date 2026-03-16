@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { RiUserSettingsLine, RiSearchLine, RiNotification2Line } from "react-icons/ri";
 import UserMenuSidebar from "./UserMenuSidebar";
 import SearchModal from "./SearchModal";
-import Axios from "axios";
+import httpCliente from "@api/services/httpCliente";
 import { updateNotificationView } from "@utils/observables";
 import { AuthContext } from "@context/auth/AuthContext";
 import useHandleApiError from "@hook/useHandleApiError";
@@ -54,11 +54,8 @@ export const AppTopbar = (props) => {
     useEffect(() => {
         const getNotificationsCount = async () => {
             try {
-                const { data } = await Axios.get("api/notifications/get_notification_count", {
+                const { data } = await httpCliente.get("api/notifications/get_notification_count", {
                     params: { userId: idusuario },
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("tokenCAJEROSSOPORTICA")}`,
-                    },
                 });
                 setUnreadCount(data);
                 if (data > 0) shakeAnimation(3);

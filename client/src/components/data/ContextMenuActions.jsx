@@ -7,7 +7,7 @@ const ContextMenuActions = ({ menuItems, itemId }) => {
     const menu = useRef(null);
 
     // Personaliza los items para incluir el estilo dinámico y el manejo de clics
-    const customizedMenuItems = menuItems.map((item) => ({
+    const customizedMenuItems = menuItems.filter((item) => item.visible !== false).map((item) => ({
         ...item,
         template: (item, options) => (
             <span

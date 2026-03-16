@@ -145,16 +145,32 @@ const AlistamientoItemsSection = ({ alistamientos, values, setValue, readOnly })
                         <div className="mt-2">
                             <label htmlFor={`obs-${item.id}`} className="font-semibold text-sm mb-2 block">
                                 Observaciones:
+                                {alistamientoStates[item.id]?.realizada === false && (
+                                    <span className="text-red-500 ml-1">*</span>
+                                )}
                             </label>
                             <InputTextarea
                                 id={`obs-${item.id}`}
                                 value={alistamientoStates[item.id]?.observaciones || ""}
                                 onChange={(e) => handleObservacionesChange(item.id, e.target.value)}
-                                placeholder="Ingrese observaciones..."
+                                placeholder={
+                                    alistamientoStates[item.id]?.realizada === false
+                                        ? "Obligatorio: explique por qué no se realizó..."
+                                        : "Ingrese observaciones..."
+                                }
                                 rows={2}
-                                className="w-full"
+                                className={`w-full${
+                                    alistamientoStates[item.id]?.realizada === false &&
+                                    !alistamientoStates[item.id]?.observaciones?.trim()
+                                        ? " p-invalid"
+                                        : ""
+                                }`}
                                 disabled={readOnly}
                             />
+                            {alistamientoStates[item.id]?.realizada === false &&
+                                !alistamientoStates[item.id]?.observaciones?.trim() && (
+                                <small className="p-error">Requerido cuando el item no se realiza</small>
+                            )}
                         </div>
                     </div>
                 ))}
@@ -276,6 +292,15 @@ const VenServicios = forwardRef(({ addItem, updateItem }, ref) => {
         if (values.service_type === 'ALISTAMIENTO') {
             if (!values.items || values.items.length === 0) {
                 handleApiError(new Error("Debe completar al menos un item de alistamiento"));
+                return;
+            }
+            const sinObservaciones = values.items.filter(
+                (item) => item.realizada === false && !item.observaciones?.trim()
+            );
+            if (sinObservaciones.length > 0) {
+                handleApiError(new Error(
+                    `${sinObservaciones.length} item(s) marcado(s) como NO requieren una descripción del motivo`
+                ));
                 return;
             }
         }

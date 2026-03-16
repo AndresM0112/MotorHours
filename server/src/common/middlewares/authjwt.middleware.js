@@ -9,11 +9,7 @@ export const verifyToken = async (req, res, next) => {
   let connection = null;
   try {
     connection = await getConnection();
-    // Leer token: primero Authorization header (cross-origin/mobile), luego cookie
-    const authHeader = req.headers["authorization"];
-    const token = (authHeader && authHeader.startsWith("Bearer "))
-      ? authHeader.slice(7)
-      : req.cookies.tokenMOTORHOURS;
+    const token = req.cookies.tokenMOTORHOURS; // Leer el token desde la cookie
 
     if (!token) {
       return res.status(401).json({ message: "Autorización inválida" });

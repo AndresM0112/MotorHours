@@ -36,8 +36,6 @@ export const AuthProvider = ({ children }) => {
 
     // Validar el token
     useEffect(() => {
-        let timeoutId;
-
         const usuId = Number(Cookies.get("idMOTORHOURS"));
         const currentPath = window.location.pathname;
 
@@ -48,6 +46,8 @@ export const AuthProvider = ({ children }) => {
             }
             return;
         }
+
+        let timeoutId;
 
         const validarToken = async () => {
             try {

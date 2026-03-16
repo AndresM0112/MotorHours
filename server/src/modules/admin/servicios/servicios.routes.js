@@ -7,12 +7,14 @@ import {
     save,
     remove,
     getDropdown,
+    changeStatus,
 } from "./servicios.controller.js";
 
 const ServiciosRoutes = express.Router();
 
 ServiciosRoutes.get("/all", getAll);
 ServiciosRoutes.get("/dropdown", getDropdown);
+ServiciosRoutes.put("/:id/status", verifyToken, changeStatus);  // cambio de estado
 ServiciosRoutes.get("/:id", getById);
 ServiciosRoutes.post("/paginate", getPaginated);
 ServiciosRoutes.post("/save", verifyToken, save);        // crear o editar
