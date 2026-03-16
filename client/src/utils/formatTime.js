@@ -42,9 +42,22 @@ export const hora = (f) => {
     return new Date(moment(f, "HH:mm"));
 };
 
+// Normaliza fechas de MySQL (UTC sin timezone) y ISO strings (con Z/+offset)
+// MySQL con dateStrings:true devuelve "YYYY-MM-DD HH:mm:ss" en UTC sin zona —
+// parseISO lo trataría como hora local causando 5h de desfase (UTC-5 Colombia).
+const parseDate = (dateString) => {
+    if (!dateString) return new Date(NaN);
+    const str = String(dateString);
+    // Formato MySQL: "2026-03-16 15:32:00" → tratar como UTC
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/.test(str)) {
+        return parseISO(str.replace(" ", "T") + "Z");
+    }
+    return parseISO(str);
+};
+
 // FECHA RELATIVA SI LA FECHA ES HOY RETORNA "HOY" SI ES DE AYER RETORNA "AYER" SI ES HACE TIEMPO RETORNA 24 DE JULIO DEL 2024 POR EJEMPLO
 export const formatNotificationDate = (dateString) => {
-    const date = parseISO(dateString);
+    const date = parseDate(dateString);
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
@@ -60,7 +73,7 @@ export const formatNotificationDate = (dateString) => {
 
 // HORA RELATIVA SI LA HORA ES MENOR A 24 HORAS RETORANAR YA SEA QUE HACE UN MINUTO HACE 2 HORAS, ETC, SI NO RETORNA LA HORA
 export const formatNotificationTime = (dateString) => {
-    const date = parseISO(dateString);
+    const date = parseDate(dateString);
     const now = new Date();
     const diff = now - date;
 
@@ -73,7 +86,7 @@ export const formatNotificationTime = (dateString) => {
 
 export const formatNotificationDateTime = (dateString) => {
     if (!dateString) return;
-    const date = parseISO(dateString);
+    const date = parseDate(dateString);
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
