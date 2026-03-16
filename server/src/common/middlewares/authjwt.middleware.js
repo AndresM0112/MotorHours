@@ -9,7 +9,12 @@ export const verifyToken = async (req, res, next) => {
   let connection = null;
   try {
     connection = await getConnection();
-    const token = req.cookies.tokenMOTORHOURS; // Leer el token desde la cookie
+    // 1. Intentar cookie httpOnly (PC / Android Chrome)
+    // 2. Fallback: Authorization header (mobile Safari con ITP que bloquea cookies cross-site)
+    const authHeader = req.headers["authorization"];
+    const token =
+      req.cookies.tokenMOTORHOURS ||
+      (authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null);
 
     if (!token) {
       return res.status(401).json({ message: "Autorización inválida" });
